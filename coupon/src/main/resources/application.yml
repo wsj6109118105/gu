@@ -1,0 +1,19 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        service: coupon
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://47.99.74.206:3306/gu_sms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+  application:
+    name: coupon
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+server:
+  port: 8000
