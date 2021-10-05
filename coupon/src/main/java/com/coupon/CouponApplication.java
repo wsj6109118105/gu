@@ -16,6 +16,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         默认所有的配置集都属于 DEFAULT_GROUP
         双11：1111    618：618   双十二：1212
         在 bootstrap.properties 中配置分组
+   5.同时加载多个配置可以在 bootstrap.properties 中配置，在 nacos 配置中心进行设置。
+        想要获取配置文件的值，可以使用 @Value 等注解，优先使用配置中心的配置。
  */
 
 @MapperScan("com/coupon/dao")
