@@ -30,6 +30,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return new PageUtils(page);
     }
 
+    /*
+        查询目录并且以父子的树形结构展示
+     */
     @Override
     public List<CategoryEntity> listWithTree() {
         //1.查出所有分类
@@ -65,5 +68,16 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return (menu1.getSort()==null?0:menu1.getSort())-(menu2.getSort()==null?0:menu2.getSort());
         }).collect(Collectors.toList());
         return collect;
+    }
+
+    /*
+        批量删除
+        @ param:asList 需要删除目录集合
+     */
+    @Override
+    public void removeMenuByIds(List<Long> asList) {
+        // TODO 判断当前菜单是否被其他地方引用
+
+        baseMapper.deleteBatchIds(asList);
     }
 }

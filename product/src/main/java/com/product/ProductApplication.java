@@ -3,6 +3,7 @@ package com.product;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 
 /*
@@ -15,8 +16,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
             2.配置Mybatis-plus
                 1 ) 使用@MapperScan扫描接口
                 2 ) 配置sql映射文件位置
-
+    2.使用逻辑删除
+        1 ) 配置全局的逻辑删除规则
+        2 )
  */
+@EnableDiscoveryClient
 @MapperScan("com/product/dao")
 @SpringBootApplication
 public class ProductApplication {
