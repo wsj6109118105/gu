@@ -79,6 +79,7 @@
             <version>4.0.1</version>
             <scope>provided</scope>
         </dependency>
+        <!--OSS-->
     </dependencies>
     <dependencyManagement>
         <dependencies>
