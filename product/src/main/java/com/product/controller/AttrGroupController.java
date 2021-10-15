@@ -16,6 +16,7 @@ import com.product.service.AttrGroupService;
 import com.common.utils.PageUtils;
 import com.common.utils.R;
 
+import javax.websocket.server.PathParam;
 
 
 /**
@@ -34,11 +35,12 @@ public class AttrGroupController {
     /**
      * 列表
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list/{catId}")
     //@RequiresPermissions("product:attrgroup:list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = attrGroupService.queryPage(params);
+    public R list(@RequestParam Map<String, Object> params, @PathVariable("catId") long catId){
+        //PageUtils page = attrGroupService.queryPage(params);
 
+        PageUtils page = attrGroupService.queryPage(params,catId);
         return R.ok().put("page", page);
     }
 
