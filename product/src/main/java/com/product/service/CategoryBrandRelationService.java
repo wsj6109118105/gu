@@ -7,7 +7,7 @@ import com.product.entity.CategoryBrandRelationEntity;
 import java.util.Map;
 
 /**
- * 
+ *
  *
  * @author lufei
  * @email 2362487738@qq.com
@@ -16,5 +16,11 @@ import java.util.Map;
 public interface CategoryBrandRelationService extends IService<CategoryBrandRelationEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void saveDetail(CategoryBrandRelationEntity categoryBrandRelation);
+
+    void updateBrand(Long brandId, String name);
+
+    void updateCategory(Long catId, String name);
 }
 

@@ -17,6 +17,7 @@
         <java.version>11</java.version>
         <!--<maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>-->
+        <knife4j.version>3.0.3</knife4j.version>
     </properties>
     <dependencies>
         <dependency>
@@ -64,6 +65,17 @@
             <artifactId>jaxb-runtime</artifactId>
             <version>2.3.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-micro-spring-boot-starter</artifactId>
+            <version>${knife4j.version}</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.7.0</version>
+            <scope>compile</scope>
+        </dependency>-->
     </dependencies>
 
     <build>

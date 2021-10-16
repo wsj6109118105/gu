@@ -5,12 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.product.entity.CategoryEntity;
 import com.product.service.CategoryService;
@@ -26,6 +23,7 @@ import com.common.utils.R;
  * @email 2362487738@qq.com
  * @date 2021-10-03 21:30:31
  */
+@Api(tags = "分类")
 @RestController
 @RequestMapping("product/category")
 public class CategoryController {
@@ -35,7 +33,7 @@ public class CategoryController {
     /**
      * 查出所有分类以及子分类，以树形结构组装起来列表
      */
-    @RequestMapping("/list/tree")
+    @GetMapping("/list/tree")
     //@RequiresPermissions("product:category:list")
     public R list(){
 
@@ -83,7 +81,7 @@ public class CategoryController {
     @RequestMapping("/update")
     //@RequiresPermissions("product:category:update")
     public R update(@RequestBody CategoryEntity category){
-		categoryService.updateById(category);
+		categoryService.updateCascade(category);
 
         return R.ok();
     }
