@@ -6,6 +6,7 @@ import com.product.entity.AttrEntity;
 import com.product.vo.AttrRespVo;
 import com.product.vo.AttrVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,10 +22,14 @@ public interface AttrService extends IService<AttrEntity> {
 
     void saveAttr(AttrVo attr);
 
-    PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId);
+    PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId, String attrType);
 
     AttrRespVo getAttrInfo(Long attrId);
 
     void updateAttr(AttrVo attr);
+
+    List<AttrEntity> getRelationAttr(Long groupId);
+
+    PageUtils getNoRelation(Long groupId, Map<String, Object> params);
 }
 

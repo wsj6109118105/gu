@@ -1,23 +1,21 @@
 package com.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.product.entity.AttrEntity;
+import com.product.service.AttrService;
 import com.product.service.CategoryService;
+import com.product.vo.AttrGroupRelationVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.product.entity.AttrGroupEntity;
 import com.product.service.AttrGroupService;
 import com.common.utils.PageUtils;
 import com.common.utils.R;
-
-import javax.websocket.server.PathParam;
 
 
 /**
@@ -35,6 +33,9 @@ public class AttrGroupController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private AttrService attrService;
 
     /**
      * 列表
@@ -99,4 +100,38 @@ public class AttrGroupController {
         return R.ok();
     }
 
+    /**
+     * 查询分组关联属性
+     * @param groupId
+     * @return
+     */
+    @GetMapping("/{groupId}/attr/relation")
+    public R attrRelation(@PathVariable("groupId") Long groupId){
+        List<AttrEntity> entityList = attrService.getRelationAttr(groupId);
+
+        return R.ok().put("data",entityList);
+    }
+
+    /**
+     * 查询分组未关联属性
+     * @param groupId
+     * @param params
+     * @return
+     */
+    @GetMapping("/{groupId}/noattr/relation")
+    public R attrNoRelation(@PathVariable("groupId") Long groupId,
+                            @RequestParam Map<String, Object> params){
+
+        PageUtils page = attrService.getNoRelation(groupId,params);
+
+        return R.ok().put("page",page);
+    }
+
+    @PostMapping("/attr/relation/delete")
+    public R deleteRelation(@RequestBody AttrGroupRelationVo[] attr){
+
+        attrGroupService.deleteRelation(attr);
+
+        return R.ok();
+    }
 }
