@@ -68,7 +68,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         //1.保存基本数据
         this.save(entity);
         //2.保存关联关系
-        if(attr.getAttrType()== ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode()) {
+        if(attr.getAttrType()== ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode()&&attr.getAttrGroupId()!=null) {
             AttrAttrgroupRelationEntity relation = new AttrAttrgroupRelationEntity();
             relation.setAttrGroupId(attr.getAttrGroupId());
             relation.setAttrId(entity.getAttrId());
@@ -111,7 +111,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             //设置分类和分组的名字
             if("base".equalsIgnoreCase(attrType)){
                 AttrAttrgroupRelationEntity id = relationDao.selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrRespVo.getAttrId()));
-                if (id != null) {
+                if (id != null && id.getAttrGroupId()!=null) {
                     AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(id.getAttrGroupId());
                     attrRespVo.setGroupName(attrGroupEntity.getAttrGroupName());
                 }

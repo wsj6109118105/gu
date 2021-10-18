@@ -3,10 +3,14 @@ package com.product.controller;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.product.entity.BrandEntity;
+import com.product.vo.BrandVo;
 import com.sun.xml.bind.v2.runtime.reflect.Lister;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +22,9 @@ import com.common.utils.R;
 
 
 /**
- *
+ * controller:处理请求，接受和校验数据
+ * service:接收 controller 传来的数据，进行业务处理
+ * controller 再接收 service 传来的数据，封装成页面指定的 Vo
  *
  * @author lufei
  * @email 2362487738@qq.com
@@ -29,6 +35,25 @@ import com.common.utils.R;
 public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
+
+    // http://localhost:88/api/product/categorybrandrelation/brands/list?t=1634542418219&catId=225
+    /**
+     * 查询分类下的所有品牌
+     * @param catId
+     * @return
+     */
+    @GetMapping("/brands/list")
+    public R relationBrandsList(@RequestParam(value = "catId",required = true) Long catId){
+        List<BrandEntity> list = categoryBrandRelationService.getBrandsByCatId(catId);
+        List<BrandVo> collect = list.stream().map(item -> {
+            BrandVo brandVo = new BrandVo();
+            brandVo.setBrandId(item.getBrandId());
+            brandVo.setBrandName(item.getName());
+            return brandVo;
+        }).collect(Collectors.toList());
+
+        return R.ok().put("data",collect);
+    }
 
     /**
      * 获取当前品牌关联的所有列表分类功能

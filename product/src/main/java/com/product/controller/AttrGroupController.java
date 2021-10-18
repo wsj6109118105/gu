@@ -6,9 +6,11 @@ import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.product.entity.AttrEntity;
+import com.product.service.AttrAttrgroupRelationService;
 import com.product.service.AttrService;
 import com.product.service.CategoryService;
 import com.product.vo.AttrGroupRelationVo;
+import com.product.vo.AttrGroupWithAttrsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,8 @@ import com.product.entity.AttrGroupEntity;
 import com.product.service.AttrGroupService;
 import com.common.utils.PageUtils;
 import com.common.utils.R;
+
+import javax.management.relation.Relation;
 
 
 /**
@@ -36,6 +40,9 @@ public class AttrGroupController {
 
     @Autowired
     private AttrService attrService;
+
+    @Autowired
+    private AttrAttrgroupRelationService relation;
 
     /**
      * 列表
@@ -127,11 +134,43 @@ public class AttrGroupController {
         return R.ok().put("page",page);
     }
 
+    /**
+     * 移除关联属性
+     * @param attr
+     * @return
+     */
     @PostMapping("/attr/relation/delete")
     public R deleteRelation(@RequestBody AttrGroupRelationVo[] attr){
 
         attrGroupService.deleteRelation(attr);
 
         return R.ok();
+    }
+
+    /**
+     * 新增关联属性
+     * @param attr
+     * @return
+     */
+    @PostMapping("/attr/relation")
+    public R addRelation(@RequestBody List<AttrGroupRelationVo> attr){
+        relation.saveBatch(attr);
+
+        return R.ok();
+    }
+
+    //http://localhost:88/api/product/attrgroup/0/withattr?t=1634544743720
+
+    /**
+     * 获取分类下所有分组，以及分组的属性信息
+     * @param catelogId
+     * @return
+     */
+    @GetMapping("/{catelogId}/withattr")
+    public R getAttrGroupWithAttrs(@PathVariable("catelogId") Long catelogId){
+        // 查出当前分类的分组信息
+        // 查出分组对应的属性信息
+        List<AttrGroupWithAttrsVo> vos = attrGroupService.getAttrGroupWithAttrsByCatelogId(catelogId);
+        return R.ok().put("data",vos);
     }
 }
