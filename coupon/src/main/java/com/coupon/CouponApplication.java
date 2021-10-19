@@ -3,6 +3,7 @@ package com.coupon;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /*
    1.命名空间：配置隔离
@@ -21,6 +22,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 
 @MapperScan("com/coupon/dao")
+@EnableDiscoveryClient
 @SpringBootApplication
 public class CouponApplication {
 

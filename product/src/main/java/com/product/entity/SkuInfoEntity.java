@@ -10,7 +10,7 @@ import lombok.Data;
 
 /**
  * sku信息
- * 
+ *
  * @author lufei
  * @email 2362487738@qq.com
  * @date 2021-10-03 21:30:30
@@ -32,7 +32,7 @@ public class SkuInfoEntity implements Serializable {
 	/**
 	 * sku名称
 	 */
-	private String skuName;
+	private String skuName;      //
 	/**
 	 * sku介绍描述
 	 */
@@ -52,15 +52,15 @@ public class SkuInfoEntity implements Serializable {
 	/**
 	 * 标题
 	 */
-	private String skuTitle;
+	private String skuTitle;      //
 	/**
 	 * 副标题
 	 */
-	private String skuSubtitle;
+	private String skuSubtitle;      //
 	/**
 	 * 价格
 	 */
-	private BigDecimal price;
+	private BigDecimal price;       //
 	/**
 	 * 销量
 	 */

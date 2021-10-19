@@ -4,6 +4,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 
 /*
@@ -34,6 +35,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
     4.统一的异常处理
         @ControllerAdvice
  */
+@EnableFeignClients(basePackages = {"com.product.feign"})
 @EnableDiscoveryClient
 @MapperScan("com/product/dao")
 @SpringBootApplication
