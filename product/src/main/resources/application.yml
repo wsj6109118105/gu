@@ -11,6 +11,8 @@ spring:
         service: product
   application:
     name: product
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:

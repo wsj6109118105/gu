@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import com.common.utils.Query;
 
 import com.product.dao.SpuInfoDao;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageTranscoder;
 
@@ -137,7 +139,11 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                     skuImagesEntity.setImgUrl(img.getImgUrl());
                     skuImagesEntity.setDefaultImg(img.getDefaultImg());
                     return skuImagesEntity;
+                }).filter(entity->{
+                    //返回true 收集
+                    return !StringUtils.isEmpty(entity.getImgUrl());
                 }).collect(Collectors.toList());
+                //TODO 没有图片路径的无需保存
                 skuImagesService.saveBatch(collect1);
                 //  3 ) sku销售属性信息    pms_sku_sale_attr_value
                 List<Attr> attr = item.getAttr();
@@ -155,9 +161,11 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 SkuReductionTo skuReductionTo = new SkuReductionTo();
                 BeanUtils.copyProperties(item,skuReductionTo);
                 skuReductionTo.setSkuId(skuId);
-                R r1 = couponFeignService.saveReduction(skuReductionTo);
-                if(r1.getCode()!=0){
-                    log.error("远程保存sku优惠信息出错");
+                if(skuReductionTo.getFullPrice().compareTo(new BigDecimal(0))==1&&skuReductionTo.getFullCount()>0){
+                    R r1 = couponFeignService.saveReduction(skuReductionTo);
+                    if(r1.getCode()!=0){
+                        log.error("远程保存sku优惠信息出错");
+                    }
                 }
             });
         }
@@ -166,6 +174,46 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Override
     public void saveBaseSpuInfo(SpuInfoEntity spuInfoEntity) {
         this.baseMapper.insert(spuInfoEntity);
+    }
+
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+
+        QueryWrapper<SpuInfoEntity> wrapper = new QueryWrapper<>();
+        String key = (String) params.get("key");
+        if(!StringUtils.isEmpty(key)){
+            wrapper.and(w->{
+                w.eq("id",key).or().like("spu_name",key).or().like("spu_description",key);
+            });
+        }
+
+        String status = (String) params.get("status");
+        if(!StringUtils.isEmpty(status)){
+            wrapper.eq("publish_status",status);
+        }
+
+        String brandId = (String) params.get("brandId");
+        if(!StringUtils.isEmpty(brandId)&&!"0".equalsIgnoreCase(brandId)){
+            wrapper.eq("brand_id",brandId);
+        }
+
+        String catelogId = (String) params.get("catelogId");
+        if(!StringUtils.isEmpty(catelogId)&&!"0".equalsIgnoreCase(brandId)){
+            wrapper.eq("catalog_id",catelogId);
+        }
+        /**
+         * status: 0
+         * key: zz
+         * brandId: 4
+         * catelogId: 225
+         */
+
+        IPage<SpuInfoEntity> page = this.page(
+                new Query<SpuInfoEntity>().getPage(params),
+                wrapper
+        );
+
+        return new PageUtils(page);
     }
 
 
