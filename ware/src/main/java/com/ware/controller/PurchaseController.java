@@ -2,9 +2,12 @@ package com.ware.controller;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.common.exception.BizCodeException;
+import com.ware.vo.FinishVo;
 import com.ware.vo.MergeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +32,24 @@ public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
 
+    @PostMapping("/done")
+    public R finish(@RequestBody FinishVo finishVo) {
+        purchaseService.done(finishVo);
+        return R.ok();
+    }
+
+    /**
+     * 领取采购单
+     * @param ids
+     * @return
+     */
+    @PostMapping("/unreceived")
+    public R unreceived(@RequestBody List<Long> ids) {
+
+        purchaseService.received(ids);
+        return R.ok();
+    }
+
     /**
      * 合并采购需求单
      * @param mergeVo
@@ -36,7 +57,10 @@ public class PurchaseController {
      */
     @PostMapping("/merge")
     public R merge(@RequestBody MergeVo mergeVo) {
-        purchaseService.merge(mergeVo);
+        int merge = purchaseService.merge(mergeVo);
+        if(merge==0){
+            return R.error(BizCodeException.FAILTOUPDATE.getCode(), BizCodeException.FAILTOUPDATE.getMsg());
+        }
 
         return R.ok();
     }

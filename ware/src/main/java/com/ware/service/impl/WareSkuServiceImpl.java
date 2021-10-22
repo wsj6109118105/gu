@@ -1,6 +1,11 @@
 package com.ware.service.impl;
 
+import com.common.utils.R;
+import com.ware.feign.ProductFeignService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -17,6 +22,11 @@ import org.springframework.util.StringUtils;
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
+    @Autowired
+    WareSkuDao wareSkuDao;
+
+    @Autowired
+    ProductFeignService productFeignService;
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<WareSkuEntity> wrapper = new QueryWrapper<>();
@@ -34,6 +44,33 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public void addSStock(Long skuId, Integer skuNum, Long wareId) {
+        //判断如果没有这个记录，则新增
+        List<WareSkuEntity> wareSkuEntities = wareSkuDao.selectList(new QueryWrapper<WareSkuEntity>().eq("sku_id", skuId).eq("ware_id", wareId));
+        if(wareSkuEntities==null||wareSkuEntities.size()==0){
+            WareSkuEntity wareSkuEntity = new WareSkuEntity();
+            wareSkuEntity.setSkuId(skuId);
+            wareSkuEntity.setStock(skuNum);
+            wareSkuEntity.setWareId(wareId);
+            wareSkuEntity.setStockLocked(0);
+            //TODO查询商品的名字，并设置
+            try {
+                R info = productFeignService.info(skuId);
+                Map<String,Object> data = (Map<String, Object>) info.get("skuInfo");
+                String sku_name = (String) data.get("skuName");
+                wareSkuEntity.setSkuName(sku_name);
+            }catch (Exception e){
+
+            }
+
+            wareSkuDao.insert(wareSkuEntity);
+
+        }else {
+            wareSkuDao.addStock(skuId,skuNum,wareId);
+        }
     }
 
 }

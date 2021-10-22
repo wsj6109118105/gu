@@ -96,7 +96,7 @@ export default {
     attrUpdateShow(row) {
       console.log(row);
       this.$router.push({
-        path: "/product-attrupdate",
+        path: '/product-attrupdate',
         query: { spuId: row.id, catalogId: row.catalogId }
       });
     },
