@@ -3,7 +3,9 @@ package com.ware.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.common.utils.PageUtils;
 import com.ware.entity.WareSkuEntity;
+import com.ware.vo.SkuHasStockVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,5 +20,7 @@ public interface WareSkuService extends IService<WareSkuEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     void addSStock(Long skuId, Integer skuNum, Long wareId);
+
+    List<SkuHasStockVo> getHasStock(List<Long> skuIds);
 }
 
