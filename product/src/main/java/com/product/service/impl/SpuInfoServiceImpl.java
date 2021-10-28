@@ -1,5 +1,6 @@
 package com.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.common.constant.ProductConstant;
 import com.common.to.SkuReductionTo;
 import com.common.to.SpuBoundsTo;
@@ -260,8 +261,9 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }).collect(Collectors.toList());
         Map<Long, Boolean> stockMap = null;
         try {
-            R hasStock = wareFeignService.getHasStock(collect);
-            List<SkuHasStockVo> data = (List<SkuHasStockVo>) hasStock.get("data");
+            R r = wareFeignService.getHasStock(collect);
+            List<SkuHasStockVo> data = r.getData(new TypeReference<List<SkuHasStockVo>>(){});
+            //  数据转换异常
             stockMap = data.stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
         }catch (Exception e) {
             log.error("库存服务查询异常{}"+e);
@@ -311,6 +313,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }else {
             // fail
             // todo 重复调用：接口幂等性，重试机制
+            //
+
         }
     }
 
