@@ -24,7 +24,7 @@ spring:
         - id: product_route
           uri: lb://product
           predicates:
-            - Path=/api/product/**
+            - Path=/api/product/**,/hello
           filters:
             - RewritePath=/api/?(?<segment>.*),/$\{segment}
         - id: member_route
@@ -46,19 +46,16 @@ spring:
             - Path=/api/third/**
           filters:
             - RewritePath=/api/?(?<segment>.*),/$\{segment}
-#        - id: third
- #           uri: lb://third
-  #          predicates:
-   #           - Path=/api/third/**
-    #        filters:
-     #         - RewritePath=/api/?(?<segment>.*),/$\{segment}
         - id: admin_route
           uri: lb://renren-fast
           predicates:
             - Path=/api/**
           filters:
             - RewritePath=/api/?(?<segment>.*),/renren-fast/$\{segment}
-
+        - id: gumall_host_router
+          uri: lb://product
+          predicates:
+            - Host=**.happymall.mall
 
 
 

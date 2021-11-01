@@ -4,7 +4,6 @@ import com.product.entity.CategoryEntity;
 import com.product.service.CategoryService;
 import com.product.vo.Catelog2Vo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,5 +37,11 @@ public class IndexController {
     public Map<String, List<Catelog2Vo>> getCatelogJson() {
         Map<String, List<Catelog2Vo>> map = categoryService.getCatelogJson();
         return map;
+    }
+
+    @ResponseBody
+    @GetMapping("/hello")
+    public String hello() {
+        return "hello";
     }
 }

@@ -34,6 +34,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
             3.关联自定义的校验器和自定义的校验注解  @Constraint(validatedBy = {ListValueValidDation.class})//可以在自定义注解指定校验器
     4.统一的异常处理
         @ControllerAdvice
+
+    6.整合redis
+        1 ) 引入依赖
+        2 ) 配置信息
  */
 @EnableFeignClients(basePackages = {"com.product.feign"})
 @EnableDiscoveryClient
