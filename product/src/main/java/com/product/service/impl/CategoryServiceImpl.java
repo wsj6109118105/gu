@@ -6,11 +6,10 @@ import com.product.service.CategoryBrandRelationService;
 import com.product.vo.Catelog2Vo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -132,27 +131,63 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 使用缓存
+     *
      * @return
      */
     @Override
     public Map<String, List<Catelog2Vo>> getCatelogJson() {
         String catelogJson = stringRedisTemplate.opsForValue().get("catelogJson");
         if (StringUtils.isEmpty(catelogJson)) {
-            Map<String, List<Catelog2Vo>> catelogJsonFromDB = getCatelogJsonFromDB();
-            String s = JSON.toJSONString(catelogJsonFromDB);
-            stringRedisTemplate.opsForValue().set("catelogJson",s,1, TimeUnit.DAYS);
+            System.out.println("缓存不命中，查询数据库");
+            Map<String, List<Catelog2Vo>> catelogJsonFromDB = getCatelogJsonFromDBWithRedisLock();
+
             return catelogJsonFromDB;
         }
-        return JSON.parseObject(catelogJson,new TypeReference<Map<String, List<Catelog2Vo>>>(){});
+        System.out.println("缓存命中");
+        return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+        });
     }
 
-    //从数据库查询封装数据
-    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDB() {
-        /*
-            变为一次查询
-         */
-        List<CategoryEntity> categoryEntities2 = baseMapper.selectList(null);
+    //redis 的分布式锁
+    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDBWithRedisLock() {
+        //加锁防止缓存击穿
+        // 使用本地锁只能锁住当前进程，在分布式情况下，需要使用分布式锁。
+        // 占分布式锁  原子加锁原子解锁
+        String uuid = UUID.randomUUID().toString();
+        Boolean lock = stringRedisTemplate.opsForValue().setIfAbsent("lock", uuid,30,TimeUnit.SECONDS);
+        if(lock){   //加锁成功
+            System.out.println("获取分布式锁成功");
+            Map<String, List<Catelog2Vo>> dataFromDB;
+            try {
+                dataFromDB = getDataFromDB();
+            }finally {
+                String luaScript = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";// lua脚本，用来释放分布式锁
+                // 删除锁
+                stringRedisTemplate.execute(new DefaultRedisScript<Long>(luaScript,Long.class), Arrays.asList("lock"),uuid);
+            }
+            return dataFromDB;
+        }else {     // 加锁失败，重试
+            System.out.println("获取分布式锁失败");
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return getCatelogJsonFromDBWithRedisLock();
+        }
+    }
 
+    private Map<String, List<Catelog2Vo>> getDataFromDB() {
+        String catelogJson = stringRedisTemplate.opsForValue().get("catelogJson");
+        if (!StringUtils.isEmpty(catelogJson)) {
+            return JSON.parseObject(catelogJson, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+            });
+        }
+        System.out.println("查询了数据库");
+            /*
+                变为一次查询
+            */
+        List<CategoryEntity> categoryEntities2 = baseMapper.selectList(null);
         //1.查询1级分类
         List<CategoryEntity> level1Categorys = getParent_cid(categoryEntities2, 0L);
         Map<String, List<Catelog2Vo>> parent_cid = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
@@ -178,7 +213,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             }
             return catelog2Vos;
         }));
+        String s = JSON.toJSONString(parent_cid);
+        stringRedisTemplate.opsForValue().set("catelogJson", s, 1, TimeUnit.DAYS);
         return parent_cid;
+    }
+
+    //从数据库查询封装数据
+    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDBWithLocalLock() {
+        //加锁防止缓存击穿
+        // todo 使用本地锁只能锁住当前进程，在分布式情况下，需要使用分布式锁。
+        synchronized (this) {
+            return getDataFromDB();
+        }
+
     }
 
     private List<CategoryEntity> getParent_cid(List<CategoryEntity> categoryEntities2, Long parent_cid) {
