@@ -38,6 +38,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
     6.整合redis
         1 ) 引入依赖
         2 ) 配置信息
+
+    7.整合 Redisson 作为分布式锁的功能框架
+        1 ) 引入依赖
+        2 ) 配置参照官方文档
  */
 @EnableFeignClients(basePackages = {"com.product.feign"})
 @EnableDiscoveryClient
