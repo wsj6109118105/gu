@@ -3,6 +3,7 @@ package com.product;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
@@ -42,6 +43,13 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
     7.整合 Redisson 作为分布式锁的功能框架
         1 ) 引入依赖
         2 ) 配置参照官方文档
+
+    8.整合 springCache 简化缓存开发
+        1 ) 引入依赖
+        2 ) 配置
+        3 ) 修改配置，将数据保存为Json格式
+            CacheAutoConfiguration -> RedisCacheConfiguration -> RedisCacheManager
+            -> 初始化配置
  */
 @EnableFeignClients(basePackages = {"com.product.feign"})
 @EnableDiscoveryClient
