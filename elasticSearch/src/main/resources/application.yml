@@ -6,5 +6,7 @@ spring:
         service: elasticSearch
   application:
     name: elasticSearch
+  thymeleaf:
+    cache: false
 server:
   port: 15000

@@ -14,7 +14,7 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
   thymeleaf:
-    cache: true
+    cache: false
   redis:
     host: localhost
     port: 6379
@@ -22,6 +22,7 @@ spring:
     type: redis
     redis:
       time-to-live: 300000
+      cache-null-values: true
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
