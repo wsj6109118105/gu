@@ -3,6 +3,8 @@ package com.elasticsearch.service;
 import com.elasticsearch.vo.SearchParam;
 import com.elasticsearch.vo.SearchResult;
 
+import java.io.IOException;
+
 /**
  * user:lufei
  * DATE:2021/11/7
