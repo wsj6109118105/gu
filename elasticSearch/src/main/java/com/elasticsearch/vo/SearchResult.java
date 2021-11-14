@@ -26,6 +26,16 @@ public class SearchResult {
 
     private List<CatalogVo> catalogs;   //当前查询到的结果所有涉及到的分类
 
+    // 面包屑导航数据
+    private List<NavVo> navs;
+
+    @Data
+    public static class NavVo {
+        private String navName;
+        private String navValue;
+        private String link;
+    }
+
     @Data
     public static class BrandVo {
         private Long brandId;    // 品牌id

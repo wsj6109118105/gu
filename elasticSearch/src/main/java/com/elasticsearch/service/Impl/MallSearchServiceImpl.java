@@ -1,9 +1,13 @@
 package com.elasticsearch.service.Impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.common.to.es.SkuEsModel;
+import com.common.utils.R;
 import com.elasticsearch.constant.EsConstant;
+import com.elasticsearch.feign.ProductFeignService;
 import com.elasticsearch.service.MallSearchService;
+import com.elasticsearch.vo.AttrResponseVo;
 import com.elasticsearch.vo.SearchParam;
 import com.elasticsearch.vo.SearchResult;
 import org.apache.lucene.search.join.ScoreMode;
@@ -11,16 +15,13 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
@@ -38,6 +39,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * user:lufei
@@ -48,7 +50,10 @@ public class MallSearchServiceImpl implements MallSearchService {
 
     @Autowired
     private RestHighLevelClient client;
-    private NestedAggregationBuilder attrs;
+    //private NestedAggregationBuilder attrs;
+
+    @Autowired
+    ProductFeignService productFeignService;
 
     @Override
     public SearchResult search(SearchParam param) {
@@ -156,6 +161,29 @@ public class MallSearchServiceImpl implements MallSearchService {
             list.add(i);
         }
         result.setPageNavs(list);
+        // 构建面包屑导航
+        if (param.getAttrs()!=null && param.getAttrs().size()>0) {
+            List<SearchResult.NavVo> navVos = param.getAttrs().stream().map(attr -> {
+                SearchResult.NavVo navVo = new SearchResult.NavVo();
+                String[] s = attr.split("_");
+                navVo.setNavValue(s[1]);
+                R r = productFeignService.attrInfo(Long.valueOf(s[0]));
+                if (r.getCode()==0) {
+                    AttrResponseVo attr1 = r.getData("attr", new TypeReference<AttrResponseVo>() {
+                    });
+                    navVo.setNavName(attr1.getAttrName());
+                }else {
+                    navVo.setNavName(s[0]);
+                }
+                // 取消掉面包屑之后，要跳转到哪个地方，将请求地址的url里面的当前值置空
+                attr = attr.replace(" ","%20");   // 处理浏览器对空格的编码
+                String replace = param.get_queryString().replace("&attrs=" + attr, "");
+                navVo.setLink("http://search.happymall.mall/list.html?"+replace);
+                return navVo;
+            }).collect(Collectors.toList());
+
+            result.setNavs(navVos);
+        }
         return result;
     }
 
