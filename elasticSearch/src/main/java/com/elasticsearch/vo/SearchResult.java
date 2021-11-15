@@ -3,6 +3,7 @@ package com.elasticsearch.vo;
 import com.common.to.es.SkuEsModel;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +28,10 @@ public class SearchResult {
     private List<CatalogVo> catalogs;   //当前查询到的结果所有涉及到的分类
 
     // 面包屑导航数据
-    private List<NavVo> navs;
+    private List<NavVo> navs = new ArrayList<>();
+
+    // 已被选择的属性
+    private List<Long> attrIds = new ArrayList<>();
 
     @Data
     public static class NavVo {

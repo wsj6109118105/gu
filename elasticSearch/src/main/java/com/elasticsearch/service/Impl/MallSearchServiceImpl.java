@@ -8,6 +8,7 @@ import com.elasticsearch.constant.EsConstant;
 import com.elasticsearch.feign.ProductFeignService;
 import com.elasticsearch.service.MallSearchService;
 import com.elasticsearch.vo.AttrResponseVo;
+import com.elasticsearch.vo.BrandVo;
 import com.elasticsearch.vo.SearchParam;
 import com.elasticsearch.vo.SearchResult;
 import org.apache.lucene.search.join.ScoreMode;
@@ -167,6 +168,7 @@ public class MallSearchServiceImpl implements MallSearchService {
                 SearchResult.NavVo navVo = new SearchResult.NavVo();
                 String[] s = attr.split("_");
                 navVo.setNavValue(s[1]);
+                result.getAttrIds().add(Long.valueOf(s[0]));
                 R r = productFeignService.attrInfo(Long.valueOf(s[0]));
                 if (r.getCode()==0) {
                     AttrResponseVo attr1 = r.getData("attr", new TypeReference<AttrResponseVo>() {
@@ -176,15 +178,42 @@ public class MallSearchServiceImpl implements MallSearchService {
                     navVo.setNavName(s[0]);
                 }
                 // 取消掉面包屑之后，要跳转到哪个地方，将请求地址的url里面的当前值置空
-                attr = attr.replace(" ","%20");   // 处理浏览器对空格的编码
-                String replace = param.get_queryString().replace("&attrs=" + attr, "");
+                String replace = getString(param, attr,"attrs");
                 navVo.setLink("http://search.happymall.mall/list.html?"+replace);
                 return navVo;
             }).collect(Collectors.toList());
 
             result.setNavs(navVos);
         }
+
+        if (param.getBrandId()!=null && param.getBrandId().size()>0) {
+            List<SearchResult.NavVo> navs = result.getNavs();
+            SearchResult.NavVo navVo = new SearchResult.NavVo();
+            navVo.setNavName("品牌");
+            R infos = productFeignService.BrandInfos(param.getBrandId());
+            if (infos.getCode()==0) {
+                List<BrandVo> brand = infos.getData("brand", new TypeReference<List<BrandVo>>() {
+                });
+                StringBuffer sb = new StringBuffer();
+                String replace = "";
+                for (BrandVo brandVo : brand) {
+                    sb.append(brandVo.getBrandName()+";");
+                    replace = getString(param, brandVo.getBrandId()+"","brandId");
+                }
+                navVo.setNavValue(sb.toString());
+                navVo.setLink("http://search.happymall.mall/list.html?"+replace);
+            }
+            navs.add(navVo);
+        }
         return result;
+    }
+
+    private String getString(SearchParam param, String attr, String key) {
+        attr = attr.replace(" ","%20");   // 处理浏览器对空格的编码
+        String replace = param.get_queryString().replace("&"+key+"=" + attr, "");
+        // TODO 面包屑导航的第一项，无法去除，因为没有 “&”
+        //replace = replace.replace("?"+key+"=" + attr, "");
+        return replace;
     }
 
     /**
