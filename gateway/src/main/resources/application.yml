@@ -55,7 +55,7 @@ spring:
         - id: gumall_host_router
           uri: lb://product
           predicates:
-            - Host=happymall.mall
+            - Host=happymall.mall,item.happymall.mall
         - id: gumall_search_router
           uri: lb://elasticSearch
           predicates:
