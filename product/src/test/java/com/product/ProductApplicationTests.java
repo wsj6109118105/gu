@@ -1,7 +1,12 @@
 package com.product;
 
 
+import com.product.dao.AttrGroupDao;
+import com.product.dao.SkuSaleAttrValueDao;
 import com.product.service.CategoryService;
+import com.product.vo.SkuItemSaleAttrVo;
+import com.product.vo.SkuItemVo;
+import com.product.vo.SpuItemAttrGroupVo;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -11,6 +16,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @SpringBootTest
@@ -24,6 +30,20 @@ class ProductApplicationTests {
 
     @Autowired
     RedissonClient redissonClient;
+
+    @Autowired
+    AttrGroupDao attrGroupDao;
+
+    @Autowired
+    SkuSaleAttrValueDao saleAttrValueDao;
+
+    @Test
+    void test() {
+        /*List<SpuItemAttrGroupVo> attrGroupWithAttrsBySpuId = attrGroupDao.getAttrGroupWithAttrsBySpuId(5L, 225L);
+        System.out.println(attrGroupWithAttrsBySpuId);*/
+        List<SkuItemSaleAttrVo> saleAttrsBySpuId = saleAttrValueDao.getSaleAttrsBySpuId(5L);
+        System.out.println(saleAttrsBySpuId);
+    }
 
     @Test
     void RedissonTest() {
