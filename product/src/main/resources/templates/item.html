@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
@@ -429,11 +428,11 @@
 
 					<div class="imgbox">
 						<div class="probox">
-							<img class="img1" alt="" src="/static/item/img/59ded626N7c4cb0a3.jpg">
+							<img class="img1" alt="" th:src="${item.info.skuDefaultImg}">
 							<div class="hoverbox"></div>
 						</div>
 						<div class="showbox">
-							<img class="img1" alt="" src="/static/item/img/59ded626N7c4cb0a3.jpg">
+							<img class="img1" alt="" th:src="${item.info.skuDefaultImg}">
 						</div>
 					</div>
 
@@ -441,15 +440,7 @@
 
 						<div class="box-lh-one">
 							<ul>
-								<li><img src="/static/item/img/59ded62eN64a9784c.jpg" /></li>
-								<li><img src="/static/item/img/59ded626Ne3c69b70.jpg" /></li>
-								<li><img src="/static/item/img/59ded626N7c4cb0a3.jpg" /></li>
-								<li><img src="/static/item/img/59ded626Ne3c69b70.jpg" /></li>
-								<li><img src="/static/item/img/59ded62dN7e28abc5 (1).jpg" /></li>
-								<li><img src="/static/item/img/59ded62cN6e9ac17c.jpg" /></li>
-								<li><img src="/static/item/img/59ded620Nfc0ab489.jpg" /></li>
-								<li><img src="/static/item/img/59ded60eN3110f3a8.jpg" /></li>
-								<li><img src="/static/item/img/59ded62dNfed003a8.jpg" /></li>
+								<li th:each="image:${item.images}" th:if="${!#strings.isEmpty(image.imgUrl)}"><img th:src="${image.imgUrl}" /></li>
 							</ul>
 						</div>
 						<div id="left">
@@ -479,11 +470,11 @@
 
 					</div>
 					<div class="box-two">
-						<div class="box-name">
+						<div class="box-name" th:text="${item.info.skuTitle}">
 							华为 HUAWEI Mate 10 6GB+128GB 亮黑色 移动联通电信4G手机 双卡双待
 						</div>
-						<div class="box-hide">预订用户预计11月30日左右陆续发货！麒麟970芯片！AI智能拍照！
-							<a href="/static/item/"><u>华为 HUAWEI Mate 10 Pro 10:08 限时限量抢！</u></a>
+						<div class="box-hide" th:text="${item.info.skuSubtitle}">预订用户预计11月30日左右陆续发货！麒麟970芯片！AI智能拍照！
+							<a href="/static/item/"><u></u></a>
 						</div>
 						<div class="box-yuyue">
 							<div class="yuyue-one">
@@ -509,7 +500,7 @@
 								<li>京东价</li>
 								<li>
 									<span>￥</span>
-									<span>4499.00</span>
+									<span th:text="${#numbers.formatDecimal(item.info.price,3,2)}">4499.00</span>
 								</li>
 								<li>
 									预约享资格
@@ -587,7 +578,7 @@
 
 								</li>
 								<li>
-									<span>无货</span>， 此商品暂时售完
+									<span th:text="${item.hasStock?'有货':'无货'}">无货</span>， 此商品暂时售完
 								</li>
 							</ul>
 						</div>
@@ -600,51 +591,14 @@
 							</ul>
 						</div>
 						<div class="box-attr-3">
-							<div class="box-attr clear">
+							<div class="box-attr clear" th:each="attr:${item.saleAttr}">
 								<dl>
-									<dt>选择颜色</dt>
-									<dd>
+									<dt>选择[[${attr.attrName}]]</dt>
+									<dd th:each="val:${#strings.listSplit(attr.attrValues,',')}">
 										<a href="/static/item/#">
-											<img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg" /> 摩卡金
+											[[${val}]]
+<!--											<img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg" /> -->
 										</a>
-									</dd>
-									<dd>
-										<a href="/static/item/#">
-											<img src="/static/item/img/59ded62eN64a9784c.jpg" /> 亮黑色
-										</a>
-									</dd>
-									<dd>
-										<a href="/static/item/#">
-											<img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg" /> 香槟金
-										</a>
-									</dd>
-									<dd>
-										<a href="/static/item/#">
-											<img src="/static/item/img/59ded682N99d4efcc.jpg" /> 樱粉金
-										</a>
-									</dd>
-								</dl>
-							</div>
-							<div class="box-attr-2 clear">
-								<dl>
-									<dt>选择版本</dt>
-									<dd>
-										<a href="/static/item/#">标准版</a>
-									</dd>
-									<dd>
-										<a href="/static/item/#">套装版</a>
-									</dd>
-								</dl>
-							</div>
-
-							<div class="box-attr-2 clear">
-								<dl>
-									<dt>选择内存</dt>
-									<dd>
-										<a href="/static/item/#">64GB</a>
-									</dd>
-									<dd>
-										<a href="/static/item/#">128GB</a>
 									</dd>
 								</dl>
 							</div>
@@ -862,45 +816,45 @@
 						<ul class="xuanxiangka">
 							<li class="jieshoa actives" id="li1">
 								<div class="shanpinsssss">
-									<p>
-										<a href="/static/item/#">品牌:华为（HUAWEI）</a>
-									</p>
-									<table>
-										<tr>
-											<td>
-												<a href="/static/item/##">商品名称：华为Mate 10</a>
-											</td>
-											<td>
-												<a href="/static/item/##">商品毛重：0.58kg</a>
-											</td>
-											<td>
-												<a href="/static/item/##">商品编号：5544038</a>
-											</td>
-											<td>
-												<a href="/static/item/##">商品产地：中国大陆</a>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<a href="/static/item/##">系统：安卓（Android）</a>
-											</td>
-											<td>
-												<a href="/static/item/##">前置摄像头像素：800万-1599万</a>
-											</td>
-											<td>
-												<a href="/static/item/##">后置摄像头像素：2000万及以上，1200万-1999万</a>
-											</td>
-											<td>
-												<a href="/static/item/##">机身内存：128GB</a>
-											</td>
-										</tr>
-										<tr>
-											<td colspan="4">
-												<a href="/static/item/##">全面屏，双卡双待，指纹识别，Type-C，VoLTE，2K屏，拍照神器，支持NFC，商务手机，安全手机，分辨率10</a>
-											</td>
-										</tr>
-									</table>
-									<img class="xiaoguo" src="/static/item/img/5a0d4181Nf70c5ebf.jpg" />
+<!--									<p>-->
+<!--										<a href="/static/item/#">品牌:华为（HUAWEI）</a>-->
+<!--									</p>-->
+<!--									<table>-->
+<!--										<tr>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">商品名称：华为Mate 10</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">商品毛重：0.58kg</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">商品编号：5544038</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">商品产地：中国大陆</a>-->
+<!--											</td>-->
+<!--										</tr>-->
+<!--										<tr>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">系统：安卓（Android）</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">前置摄像头像素：800万-1599万</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">后置摄像头像素：2000万及以上，1200万-1999万</a>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<a href="/static/item/##">机身内存：128GB</a>-->
+<!--											</td>-->
+<!--										</tr>-->
+<!--										<tr>-->
+<!--											<td colspan="4">-->
+<!--												<a href="/static/item/##">全面屏，双卡双待，指纹识别，Type-C，VoLTE，2K屏，拍照神器，支持NFC，商务手机，安全手机，分辨率10</a>-->
+<!--											</td>-->
+<!--										</tr>-->
+<!--									</table>-->
+									<img class="xiaoguo" th:src="${desc}" th:each="desc:${#strings.listSplit(item.desc.decript,',')}"/>
 									<div class="guiGebox guiGebox1">
 										<div class="guiGe">
 											<h3>主体</h3>

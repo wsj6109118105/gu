@@ -60,6 +60,10 @@ spring:
           uri: lb://elasticSearch
           predicates:
             - Host=search.happymall.mall
+        - id: gumall_authServer_router
+          uri: lb://authServer
+          predicates:
+            - Host=auth.happymall.mall
 
 
 
