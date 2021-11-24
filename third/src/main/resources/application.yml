@@ -10,9 +10,4 @@ spring:
 server:
   port: 13000
 
-alibaba:
-  cloud:
-    access-key: LTAI5tHRWqMKb6ZPhds8hNBv
-    secret-key: gUsOhCHLthZ373mbRNzZI6B9jjzNqv
-    oss:
-      endpoint: oss-cn-hangzhou.aliyuncs.com
+

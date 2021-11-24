@@ -1,33 +1,28 @@
-package com.third;
+package com.third.service;
 
-import com.aliyun.oss.OSS;
 import com.cloopen.rest.sdk.BodyType;
 import com.cloopen.rest.sdk.CCPRestSmsSDK;
 import com.third.config.SendMessageConfig;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Set;
 
-@SpringBootTest
-class ThirdApplicationTests {
+/**
+ * user:lufei
+ * DATE:2021/11/24
+ **/
+@EnableConfigurationProperties(SendMessageConfig.class)
+@Service
+public class SendMessageService {
 
     @Autowired
-    OSS ossClient;
+    private SendMessageConfig config;
 
-    @Autowired
-    SendMessageConfig config;
-
-    /**
-     * 接入短信服务
-     */
-    @Test
-    void contextLoads() {
+    public void sendMessage(String PhoneNumber,String code) {
         //生产环境请求地址：app.cloopen.com
         String serverIp = "app.cloopen.com";
         //请求端口
@@ -42,8 +37,7 @@ class ThirdApplicationTests {
         sdk.setAccount(accountSId, accountToken);
         sdk.setAppId(appId);
         sdk.setBodyType(BodyType.Type_JSON);
-        String code = String.valueOf(Math.random()).substring(2, 8);
-        System.out.println(code);
+        //String code = String.valueOf(Math.random()).substring(2, 8);
         String to = "17803412102";
         String templateId= "1";
         String[] datas = {code,"5分钟"};
@@ -57,7 +51,7 @@ class ThirdApplicationTests {
             Set<String> keySet = data.keySet();
             for(String key:keySet){
                 Object object = data.get(key);
-                System.out.println(key +" = "+object);
+                //System.out.println(key +" = "+object);
             }
         }else{
             //异常返回输出错误码和错误信息
@@ -65,23 +59,4 @@ class ThirdApplicationTests {
         }
     }
 
-    /**
-     * 1.引入starter
-     * 2.配置key,secret,endpoint
-     * 3.使用OSS
-     * @throws FileNotFoundException
-     */
-    @Test
-    void testUpload() throws FileNotFoundException {
-
-        // 填写本地文件的完整路径。如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件流。
-        InputStream inputStream = new FileInputStream("C:\\Users\\wsj\\Pictures\\Camera Roll\\新建文件夹\\1.jpg");
-        // 依次填写Bucket名称（例如examplebucket）和Object完整路径（例如exampledir/exampleobject.txt）。Object完整路径中不能包含Bucket名称。
-        ossClient.putObject("gudemo", "1.jpg", inputStream);
-
-        // 关闭OSSClient。
-        ossClient.shutdown();
-
-        System.out.println("上传完成");
-    }
 }
