@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.common.exception.BizCodeException;
+import com.member.exception.PhoneExitException;
+import com.member.exception.UsernameExitException;
 import com.member.feign.CouponFeignService;
+import com.member.vo.MemberRegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.member.entity.MemberEntity;
 import com.member.service.MemberService;
@@ -41,6 +41,18 @@ public class MemberController {
         System.out.println(member.getNickname());
         R membercoupon = couponFeignService.membercoupon();
         return R.ok().put("member",member).put("coupons",membercoupon.get("coupon"));
+    }
+
+    @PostMapping("/register")
+    public R register(@RequestBody MemberRegisterVo registerVo) {
+        try {
+            memberService.regist(registerVo);
+        }catch (PhoneExitException e) {
+            R.error(BizCodeException.PHONE_EXIST_EXCEPTION.getCode(), BizCodeException.PHONE_EXIST_EXCEPTION.getMsg());
+        }catch (UsernameExitException e) {
+            R.error(BizCodeException.USER_EXIST_EXCEPTION.getCode(), BizCodeException.USER_EXIST_EXCEPTION.getMsg());
+        }
+        return R.ok();
     }
     /**
      * 列表
