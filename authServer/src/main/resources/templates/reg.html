@@ -5310,12 +5310,12 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 
 				});
 			})
-			var num = 10;
+			var num = 60;
 			function timeoutChangeStyle() {
 				$("#sendCode").attr("class","disable")
 				if(num==0) {
 					$("#sendCode").text("发送验证码");
-					num=10;
+					num=60;
 					$("#sendCode").attr("class","")
 				}else {
 					var str = num+"s 后再次发送";

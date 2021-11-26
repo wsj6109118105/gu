@@ -2,6 +2,7 @@ package com.authServer.controller;
 
 import com.alibaba.fastjson.TypeReference;
 import com.authServer.feign.MemberFeignService;
+import com.authServer.vo.UserLoginVo;
 import com.authServer.vo.UserRegisterVo;
 import com.common.constant.AuthConstant;
 import com.common.utils.R;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -47,10 +49,10 @@ public class LoginController {
             // 调用远程服务
             R register = memberFeignService.register(user);
             if (register.getCode() == 0) {   // 成功
-                return "redirect:/login.html";
+                return "redirect:http://auth.happymall.mall/login.html";
             } else {
                 Map<String, String> errors = new HashMap<>();
-                errors.put("msg", register.getData(new TypeReference<String>() {
+                errors.put("msg", register.getData("msg",new TypeReference<String>() {
                 }));
                 redirectAttributes.addFlashAttribute("errors", errors);
                 return "redirect:http://auth.happymall.mall/reg.html";
@@ -60,6 +62,20 @@ public class LoginController {
             errors.put("code", "验证码不正确");
             redirectAttributes.addFlashAttribute("errors", errors);
             return "redirect:http://auth.happymall.mall/reg.html";
+        }
+    }
+
+    @PostMapping("/login")
+    public String login(UserLoginVo vo,RedirectAttributes redirectAttributes) {
+        // 远程登录
+        R login = memberFeignService.login(vo);
+        if (login.getCode()==0) {
+            return "redirect:http://happymall.mall";
+        }else {
+            Map<String,String> errors = new HashMap<>();
+            errors.put("msg",login.getData("msg",new TypeReference<String>(){}));
+            redirectAttributes.addFlashAttribute("errors",errors);
+            return "redirect:http://auth.happymall.mall/login.html";
         }
     }
 }

@@ -37,7 +37,7 @@ public class indexController {
         System.out.println(s);
         if (s!=null&&!StringUtils.isEmpty(s)) {
             long l = Long.parseLong(s.split("_")[1]);
-            if (System.currentTimeMillis() - l < 10000) {
+            if (System.currentTimeMillis() - l < 60000) {
                 // 60 秒内不能再发
                 return R.error(BizCodeException.SMS_CODE_EXCEPTION.getCode(), BizCodeException.SMS_CODE_EXCEPTION.getMsg());
             }

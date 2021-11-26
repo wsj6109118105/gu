@@ -5,8 +5,10 @@ import com.member.entity.MemberLevelEntity;
 import com.member.exception.PhoneExitException;
 import com.member.exception.UsernameExitException;
 import com.member.vo.MemberRegisterVo;
+import com.member.vo.UserLoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -54,7 +56,9 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         // 密码要进行加密
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encode = passwordEncoder.encode(registerVo.getPassWord());
+        System.out.println(encode);
         member.setPassword(encode);
+        System.out.println(member.getPassword());
         // TODO 其他的默认信息
 
         memberDao.insert(member);
@@ -81,6 +85,28 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         if (username > 0) {
             throw new UsernameExitException();
         }
+    }
+
+    @Override
+    public MemberEntity login(UserLoginVo vo) {
+        String loginacct = vo.getLoginacct();
+        String passWord = vo.getPassWord();
+        MemberDao memberDao = this.baseMapper;
+        MemberEntity member = memberDao.selectOne(new QueryWrapper<MemberEntity>().eq("username", loginacct).or().eq("mobile", loginacct));
+        if (member!=null) {
+            String password = member.getPassword();
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            System.out.println(passWord);
+            System.out.println(password);
+            boolean matches = passwordEncoder.matches(passWord, password);
+            if (matches) {
+                return member;
+            }else {
+                return null;
+            }
+        }
+
+        return null;
     }
 
 }

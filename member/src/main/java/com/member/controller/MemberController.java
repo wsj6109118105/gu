@@ -9,6 +9,7 @@ import com.member.exception.PhoneExitException;
 import com.member.exception.UsernameExitException;
 import com.member.feign.CouponFeignService;
 import com.member.vo.MemberRegisterVo;
+import com.member.vo.UserLoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +54,19 @@ public class MemberController {
             R.error(BizCodeException.USER_EXIST_EXCEPTION.getCode(), BizCodeException.USER_EXIST_EXCEPTION.getMsg());
         }
         return R.ok();
+    }
+
+    @PostMapping("/login")
+    public R login(@RequestBody UserLoginVo vo) {
+        MemberEntity member = memberService.login(vo);
+        if (member!=null) {
+            // TODO 登录成功处理
+            return R.ok();
+        }else {
+            return R.error(BizCodeException.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode()
+                    , BizCodeException.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());
+        }
+
     }
     /**
      * 列表

@@ -22,6 +22,7 @@ public enum BizCodeException {
     PRODUCT_UP_EXCEPTION(11000,"商品上架出错"),
     USER_EXIST_EXCEPTION(15000,"用户名已存在"),
     PHONE_EXIST_EXCEPTION(15001,"手机号已被注册"),
+    LOGINACCT_PASSWORD_INVAILD_EXCEPTION(15002,"用户名或密码错误"),
     SMS_CODE_EXCEPTION(10002,"短信验证码，频率太高，稍后再试");
 
     private int code;
