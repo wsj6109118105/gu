@@ -9,6 +9,7 @@ import com.member.exception.PhoneExitException;
 import com.member.exception.UsernameExitException;
 import com.member.feign.CouponFeignService;
 import com.member.vo.MemberRegisterVo;
+import com.member.vo.SocialUser;
 import com.member.vo.UserLoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +57,17 @@ public class MemberController {
         return R.ok();
     }
 
+    @PostMapping("/oauth2/login")
+    public R Login(@RequestBody SocialUser socialUser) {
+        MemberEntity member = memberService.login(socialUser);
+        if (member!=null) {
+            return R.ok().setData(member);
+        }else {
+            return R.error(BizCodeException.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode()
+                    , BizCodeException.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());
+        }
+    }
+
     @PostMapping("/login")
     public R login(@RequestBody UserLoginVo vo) {
         MemberEntity member = memberService.login(vo);
@@ -66,7 +78,6 @@ public class MemberController {
             return R.error(BizCodeException.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode()
                     , BizCodeException.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());
         }
-
     }
     /**
      * 列表

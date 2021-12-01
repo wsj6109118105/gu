@@ -1,5 +1,6 @@
 package com.authServer.feign;
 
+import com.authServer.vo.SocialUser;
 import com.authServer.vo.UserLoginVo;
 import com.authServer.vo.UserRegisterVo;
 import com.common.utils.R;
@@ -18,4 +19,7 @@ public interface MemberFeignService {
 
     @PostMapping("/member/member/login")
     R login(@RequestBody UserLoginVo vo);
+
+    @PostMapping("/member/member/oauth2/login")
+    R Login(@RequestBody SocialUser socialUser);
 }
