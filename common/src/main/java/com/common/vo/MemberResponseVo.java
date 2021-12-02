@@ -1,9 +1,10 @@
-package com.authServer.vo;
+package com.common.vo;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Date;
  **/
 @ToString
 @Data
-public class MemberResponseVo {
+public class MemberResponseVo implements Serializable {
     /**
      * id
      */

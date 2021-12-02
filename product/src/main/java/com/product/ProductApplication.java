@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 
 /*
@@ -51,6 +52,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
             CacheAutoConfiguration -> RedisCacheConfiguration -> RedisCacheManager
             -> 初始化配置
  */
+@EnableRedisHttpSession
 @EnableFeignClients(basePackages = {"com.product.feign"})
 @EnableDiscoveryClient
 @MapperScan("com/product/dao")

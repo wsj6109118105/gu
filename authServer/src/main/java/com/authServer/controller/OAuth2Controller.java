@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.authServer.config.OAuth2ConfigurationProperties;
 import com.authServer.feign.MemberFeignService;
-import com.authServer.vo.MemberResponseVo;
+import com.common.vo.MemberResponseVo;
 import com.authServer.vo.SocialUser;
 import com.common.utils.HttpUtils;
 import com.common.utils.R;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class OAuth2Controller {
      * @throws Exception
      */
     @GetMapping("/oauth2/weibo/success")
-    public String weibo(@RequestParam("code") String code) throws Exception {
+    public String weibo(@RequestParam("code") String code, HttpSession session) throws Exception {
         // 根据 code 换取 accessToken
         Map<String,String> map = new HashMap<String,String>();
         map.put("client_id",OAuth.getClient_id());
@@ -62,6 +63,9 @@ public class OAuth2Controller {
                 MemberResponseVo data = login.getData("data", new TypeReference<MemberResponseVo>() {});
                 //System.out.println("登录成功，用户信息" + data);
                 log.info("登录成功，用户信息"+data.toString());
+                // TODO 1. 默认发的令牌  作用域：当前域，无法解决子域的问题
+                // TODO 2. 使用 JSON 的序列化方式来序列化对象数据到Redis
+                session.setAttribute("loginUser",data);
                 return "redirect:http://happymall.mall";
             }else {
                 return "redirect:http://auth.happymall.mall/login.html";
