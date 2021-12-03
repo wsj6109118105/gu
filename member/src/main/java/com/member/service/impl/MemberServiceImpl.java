@@ -65,7 +65,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         String encode = passwordEncoder.encode(registerVo.getPassWord());
         System.out.println(encode);
         member.setPassword(encode);
-        System.out.println(member.getPassword());
+        member.setNickname(registerVo.getUserName());
         // TODO 其他的默认信息
 
         memberDao.insert(member);

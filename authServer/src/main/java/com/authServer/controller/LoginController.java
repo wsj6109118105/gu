@@ -6,16 +6,19 @@ import com.authServer.vo.UserLoginVo;
 import com.authServer.vo.UserRegisterVo;
 import com.common.constant.AuthConstant;
 import com.common.utils.R;
+import com.common.vo.MemberResponseVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,16 +69,28 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(UserLoginVo vo,RedirectAttributes redirectAttributes) {
+    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes, HttpSession session) {
         // 远程登录
         R login = memberFeignService.login(vo);
         if (login.getCode()==0) {
+            MemberResponseVo data = login.getData("data", new TypeReference<MemberResponseVo>() {});
+            session.setAttribute(AuthConstant.LOGIN_USER,data);
             return "redirect:http://happymall.mall";
         }else {
             Map<String,String> errors = new HashMap<>();
             errors.put("msg",login.getData("msg",new TypeReference<String>(){}));
             redirectAttributes.addFlashAttribute("errors",errors);
             return "redirect:http://auth.happymall.mall/login.html";
+        }
+    }
+
+    @GetMapping("/login.html")
+    public String loginPage(HttpSession session) {
+        Object attribute = session.getAttribute(AuthConstant.LOGIN_USER);
+        if (attribute == null) {
+            return "login";
+        }else {
+            return "redirect:http://happymall.mall";
         }
     }
 }

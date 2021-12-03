@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.authServer.config.OAuth2ConfigurationProperties;
 import com.authServer.feign.MemberFeignService;
+import com.common.constant.AuthConstant;
 import com.common.vo.MemberResponseVo;
 import com.authServer.vo.SocialUser;
 import com.common.utils.HttpUtils;
@@ -65,7 +66,7 @@ public class OAuth2Controller {
                 log.info("登录成功，用户信息"+data.toString());
                 // TODO 1. 默认发的令牌  作用域：当前域，无法解决子域的问题
                 // TODO 2. 使用 JSON 的序列化方式来序列化对象数据到Redis
-                session.setAttribute("loginUser",data);
+                session.setAttribute(AuthConstant.LOGIN_USER,data);
                 return "redirect:http://happymall.mall";
             }else {
                 return "redirect:http://auth.happymall.mall/login.html";

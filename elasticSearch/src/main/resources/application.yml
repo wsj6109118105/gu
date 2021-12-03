@@ -8,5 +8,10 @@ spring:
     name: elasticSearch
   thymeleaf:
     cache: false
+  session:
+    store-type: redis
+  redis:
+    port: 6379
+    host: localhost
 server:
   port: 15000

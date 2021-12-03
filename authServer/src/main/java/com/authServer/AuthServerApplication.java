@@ -7,6 +7,13 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
+/**
+ * 原理：@EnableRedisHttpSession 导入了 RedisHttpSessionConfiguration
+ *      导入组件：RedisIndexedSessionRepository redis操作 Session
+ *      SessionRepositoryFilter session存储过滤器
+ *
+ */
+
 @EnableRedisHttpSession
 @EnableFeignClients
 @EnableDiscoveryClient
