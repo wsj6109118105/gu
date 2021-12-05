@@ -64,6 +64,10 @@ spring:
           uri: lb://authServer
           predicates:
             - Host=auth.happymall.mall
+        - id: gumall_cart_router
+          uri: lb://cart
+          predicates:
+            - Host=cart.happymall.mall
 
 
 
