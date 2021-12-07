@@ -21,6 +21,11 @@
         where info.spu_id=#{spuId}
         GROUP BY ssav.attr_id,ssav.attr_name;
     </select>
+    <select id="getSkuSaleAttrValue" resultType="java.lang.String">
+        SELECT CONCAT(attr_name,"：",attr_value)
+        FROM pms_sku_sale_attr_value
+        where sku_id=#{skuId};
+    </select>
 
 
 </mapper>
