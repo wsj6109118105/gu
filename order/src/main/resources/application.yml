@@ -10,6 +10,10 @@ spring:
     url: jdbc:mysql://47.99.74.206:3306/gu_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
   application:
     name: order
+  rabbitmq:
+    host: 47.99.74.206
+    port: 5672
+    virtual-host: /
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
