@@ -1,6 +1,16 @@
 package com.order.service.impl;
 
+import com.order.entity.OrderReturnReasonEntity;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.impl.AMQImpl;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,6 +34,24 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEnt
         );
 
         return new PageUtils(page);
+    }
+
+    // queues: 声明需要监听的队列
+    @RabbitListener(queues = {"hello.java.queue"})
+    public void receiveMessage(Message obj, OrderReturnReasonEntity content, Channel channel) {
+        byte[] body = obj.getBody();
+        MessageProperties messageProperties = obj.getMessageProperties();
+        System.out.println("接收到消息..."+obj);
+        long deliveryTag = messageProperties.getDeliveryTag();
+        try {
+            // 收货
+            channel.basicAck(deliveryTag,false);
+            // 退货
+            channel.basicNack(deliveryTag,);
+            channel.basicReject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -14,10 +14,17 @@ spring:
     host: 47.99.74.206
     port: 5672
     virtual-host: /
+    publisher-confirm-type: simple
+    publisher-returns: true
+    template:
+      mandatory: true    #只要抵达队列，以异步发送优先回调这个 returnconfirm
+    listener:
+      simple:
+        acknowledge-mode: manual     # 手动 ack 消息
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
     db-config:
       id-type: auto
 server:
-  port: 10000
+  port: 20000
