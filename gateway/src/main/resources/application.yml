@@ -68,6 +68,10 @@ spring:
           uri: lb://cart
           predicates:
             - Host=cart.happymall.mall
+        - id: gumall_order_router
+          uri: lb://order
+          predicates:
+            - Host=order.happymall.mall
 
 
 

@@ -47,8 +47,8 @@ public class OrderItemServiceImpl extends ServiceImpl<OrderItemDao, OrderItemEnt
             // 收货
             channel.basicAck(deliveryTag,false);
             // 退货
-            channel.basicNack(deliveryTag,);
-            channel.basicReject();
+            channel.basicNack(deliveryTag,false,false);
+            channel.basicReject(deliveryTag,false);
         } catch (IOException e) {
             e.printStackTrace();
         }

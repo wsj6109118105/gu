@@ -21,6 +21,15 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual     # 手动 ack 消息
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  session:
+    store-type: redis
+  redis:
+    port: 6379
+    host: localhost
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
@@ -28,3 +37,8 @@ mybatis-plus:
       id-type: auto
 server:
   port: 20000
+mall:
+  thread:
+    core-size: 20
+    max-size: 200
+    keep-alive-time: 10
