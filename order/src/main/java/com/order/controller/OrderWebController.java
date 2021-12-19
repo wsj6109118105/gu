@@ -1,5 +1,6 @@
 package com.order.controller;
 
+import com.order.feign.MemberFeignService;
 import com.order.service.OrderService;
 import com.order.vo.OrderConfirmVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ public class OrderWebController {
 
     @Autowired
     OrderService orderService;
+
 
     @GetMapping("/toTrade")
     public String toTrade(Model model) {

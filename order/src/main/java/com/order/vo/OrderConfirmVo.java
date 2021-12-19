@@ -1,6 +1,8 @@
 package com.order.vo;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -9,27 +11,45 @@ import java.util.List;
  * user:lufei
  * DATE:2021/12/15
  **/
-@Data
+
 public class OrderConfirmVo {
 
     // 收货地址
+    @Getter @Setter
     List<MemberAddress> addresses;
 
     // 所有选中的购物项
+    @Getter @Setter
     List<OrderItemVo> items;
 
     // todo 发票。。。
 
+    // 订单防重令牌
+    @Getter @Setter
+    String orderToken;
 
-    // 优惠卷
+    // 优惠卷,积分
+    @Getter @Setter
     Integer integration;
 
     // 订单总额
-    BigDecimal total;
+    //BigDecimal total;
 
+    public BigDecimal getTotal() {
+        BigDecimal sum = new BigDecimal(0);
+        assert items!=null;
+        for (OrderItemVo item : items) {
+            sum = sum.add(item.getPrice().multiply(new BigDecimal(item.getCount())));
+        }
+        return sum;
+    }
     // 优惠总额
-    BigDecimal reduce;
+    //BigDecimal reduce;
 
     // 应付价格
-    BigDecimal payPrice;
+    //BigDecimal payPrice;
+
+    public BigDecimal getPayPrice() {
+        return getTotal();
+    }
 }
