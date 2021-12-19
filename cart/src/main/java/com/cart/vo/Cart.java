@@ -45,7 +45,9 @@ public class Cart {
         // 计算购物项总价
         if (items!=null && items.size()>0) {
             for (CartItem item : items) {
-                totalAmount = totalAmount.add(item.getTotalPrice());
+                if (item.getCheck()) {
+                    totalAmount = totalAmount.add(item.getTotalPrice());
+                }
             }
         }
         // 减去优惠
