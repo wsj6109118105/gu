@@ -6,6 +6,7 @@ import com.order.entity.OrderEntity;
 import com.order.vo.OrderConfirmVo;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 订单
@@ -22,6 +23,6 @@ public interface OrderService extends IService<OrderEntity> {
      *
      * @return 返回订单需要用的数据
      */
-    OrderConfirmVo confirmOrder();
+    OrderConfirmVo confirmOrder() throws ExecutionException, InterruptedException;
 }
 
