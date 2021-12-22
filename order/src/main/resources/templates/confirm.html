@@ -730,7 +730,12 @@
 				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">￥<b id="payPriceEle">[[${#numbers.formatDecimal(orderConfirm.getPayPrice(),1,2)}]]</b></span></p>
 				<p class="yfze_b">寄送至：<span id="receiveAddressEle"></span> 收货人：<span id="receiverEle"></span> </p>
 			</div>
-			<button class="tijiao">提交订单</button>
+			<form action="http://order.happymall.mall/submitOrder" method="post">
+				<input id="addrIdInput" type="hidden" name="addrId"/>
+				<input id="payPriceInput" type="hidden" name="payPrice"/>
+				<input type="hidden" name="orderToken" th:value="${orderConfirm.orderToken}"/>
+				<button class="tijiao" type="submit">提交订单</button>
+			</form>
 		</div>
 		</div>
 
@@ -983,11 +988,13 @@
 			})
 
 			function getfare(addrId) {
+				$("#addrIdInput").val(addrId);  // 收货地址回填
 				// 发送 ajax 获取运费信息
 				$.get("http://happymall.mall/api/ware/wareinfo/fare?addrId="+addrId,function (data){
-					$("#fareEle").text(data.data.fare*1);
+					$("#fareEle").text(data.data.fare*1);  // 设置运费
 					var total = [[${orderConfirm.getPayPrice()}]];
-					$("#payPriceEle").text(total*1 + data.data.fare*1) // 设置运费
+					$("#payPriceEle").text(total*1 + data.data.fare*1)  // 设置应付总价
+					$("#payPriceInput").val(total*1 + data.data.fare*1)  // 应付总额回填
 					$("#receiveAddressEle").text(data.data.address.province+ " " +data.data.address.city+ " " +data.data.address.detailAddress)  // 设置收货地址
 					$("#receiverEle").text(data.data.address.name)  // 设置收货人
 				})
