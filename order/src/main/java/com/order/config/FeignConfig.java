@@ -23,12 +23,13 @@ public class FeignConfig {
             public void apply(RequestTemplate requestTemplate) {
                 // 1. RequestContextHolder拿到刚进来的这个请求数据
                 ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                assert requestAttributes != null;
-                HttpServletRequest request = requestAttributes.getRequest();  // 老请求
-                // 2. 同步请求头信息，cookie
-                String cookie = request.getHeader("Cookie");
-                // 给新请求同步了老请求 cookie
-                requestTemplate.header("Cookie",cookie);
+                if(requestAttributes!=null) {
+                    HttpServletRequest request = requestAttributes.getRequest();  // 老请求
+                    // 2. 同步请求头信息，cookie
+                    String cookie = request.getHeader("Cookie");
+                    // 给新请求同步了老请求 cookie
+                    requestTemplate.header("Cookie",cookie);
+                }
             }
         };
     }

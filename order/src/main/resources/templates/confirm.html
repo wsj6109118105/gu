@@ -597,8 +597,8 @@
 			</div>
 
 			<!--地址-->
-			<div class="top-3" th:each="addr:${orderConfirm.addresses}">
-				<p>[[${addr.name}]]</p><span>[[${addr.province}]]  [[${addr.city}]]
+			<div class="top-3 addr-item" th:each="addr:${orderConfirm.addresses}">
+				<p th:attr="def=${addr.defaultStatus},addrId=${addr.id}">[[${addr.name}]]</p><span>[[${addr.province}]]  [[${addr.city}]]
 			[[${addr.detailAddress}]]  [[${addr.phone}]]</span>
 			</div>
 			<p class="p2">更多地址︾</p>
@@ -664,7 +664,7 @@
 				<div class="yun1" th:each="item:${orderConfirm.items}">
 					<img th:src="${item.img}" class="yun"/>
 					<div class="mi">
-						<p>[[${item.title}]] <span style="color: red;"> ￥ [[${#numbers.formatDecimal(item.price,1,2)}]]</span> <span> [[${item.count}]] </span> <span>[[${item.hasStock==null?'有货':'无货'}]]</span></p>
+						<p>[[${item.title}]] <span style="color: red;"> ￥ [[${#numbers.formatDecimal(item.price,1,2)}]]</span> <span> [[${item.count}]] </span> <span> [[${orderConfirm.stocks[item.skuId]?'有货':'无货'}]] </span></p>
 						<p><span>0.095kg</span></p>
 						<p class="tui-1"><img src="/static/order/confirm/img/i_07.png" />支持7天无理由退货</p>
 					</div>
@@ -713,7 +713,7 @@
 				</p>
 				<p class="qian_y">
 					<span>运费： </span>
-					<span class="rmb"> &nbsp ￥0.00</span>
+					<span class="rmb"> &nbsp ￥<b id="fareEle"></b></span>
 				</p>
 				<p class="qian_y">
 					<span>服务费： </span>
@@ -727,8 +727,8 @@
 			</div>
 
 			<div class="yfze">
-				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">￥[[${#numbers.formatDecimal(orderConfirm.getPayPrice(),1,2)}]]</span></p>
-				<p class="yfze_b">寄送至：</p>
+				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">￥<b id="payPriceEle">[[${#numbers.formatDecimal(orderConfirm.getPayPrice(),1,2)}]]</b></span></p>
+				<p class="yfze_b">寄送至：<span id="receiveAddressEle"></span> 收货人：<span id="receiverEle"></span> </p>
 			</div>
 			<button class="tijiao">提交订单</button>
 		</div>
@@ -962,8 +962,37 @@
                     $('.h-r-1').css('display','block')
                 },function(){
                     $('.h-r-1').css('display','none')
-                })
+                });
+
+				highlight();
+				getfare($(".addr-item p[def='1']").attr("addrId"))
             })
+
+			function highlight() {
+				$(".addr-item p").css({"border":"2px solid gray"})
+				$(".addr-item p[def='1']").css({"border":"2px solid red"})
+			}
+
+			$(".addr-item p").click(function (){
+				$(".addr-item p").attr("def","0");
+				$(this).attr("def","1")
+				highlight();
+				// 获取地址 id
+				var addrId=$(this).attr("addrId")
+				getfare(addrId);
+			})
+
+			function getfare(addrId) {
+				// 发送 ajax 获取运费信息
+				$.get("http://happymall.mall/api/ware/wareinfo/fare?addrId="+addrId,function (data){
+					$("#fareEle").text(data.data.fare*1);
+					var total = [[${orderConfirm.getPayPrice()}]];
+					$("#payPriceEle").text(total*1 + data.data.fare*1) // 设置运费
+					$("#receiveAddressEle").text(data.data.address.province+ " " +data.data.address.city+ " " +data.data.address.detailAddress)  // 设置收货地址
+					$("#receiverEle").text(data.data.address.name)  // 设置收货人
+				})
+			}
+
 
 
 		</script>

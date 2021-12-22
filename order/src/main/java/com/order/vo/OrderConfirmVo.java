@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /** 订单确认页需要用的数据
  * user:lufei
@@ -31,6 +32,9 @@ public class OrderConfirmVo {
     // 优惠卷,积分
     @Getter @Setter
     Integer integration;
+
+    @Getter @Setter
+    Map<Long,Boolean> stocks;
 
     /**
      * 获取商品的总件数
