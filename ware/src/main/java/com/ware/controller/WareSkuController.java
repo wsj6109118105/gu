@@ -6,8 +6,7 @@ import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import com.common.exception.BizCodeException;
-import com.ware.Exception.NoStockException;
-import com.ware.vo.LockStockResult;
+import com.common.exception.NoStockException;
 import com.ware.vo.SkuHasStockVo;
 import com.ware.vo.WareSkuLockVo;
 import org.springframework.beans.factory.annotation.Autowired;

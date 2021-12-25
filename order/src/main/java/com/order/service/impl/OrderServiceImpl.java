@@ -2,6 +2,7 @@ package com.order.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.common.exception.NoStockException;
 import com.common.utils.R;
 import com.common.vo.MemberResponseVo;
 import com.order.constant.OrderConstant;
@@ -140,11 +141,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
         MemberResponseVo memberResponseVo = LoginUser.loginUser.get();
         submitVoThreadLocal.set(submitVo);
+        responseVo.setCode(0);
         // 令牌的对比和删除要保证原子性
-        String script = "if redis.call('get',KEYS[1]==ARGV[1]) then return redis.call('del',KEYS[1]) else return 0 end";
+        String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
         String orderToken = submitVo.getOrderToken();
         // 原子操作
-        Long result = redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), Arrays.asList(OrderConstant.USER_ORDER_TOKEN_PREFIX + memberResponseVo.getId()), orderToken);
+        Long result = redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class), List.of(OrderConstant.USER_ORDER_TOKEN_PREFIX + memberResponseVo.getId()), orderToken);
         if (result==1) {
             // 令牌验证成功
             OrderCreateTo order = createOrder();
@@ -153,7 +155,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             if (Math.abs(payPrice.subtract(subPayPrice).doubleValue())<0.01) {
                 // 金额对比成功,保存订单
                 saveOrder(order);
-                // 库存锁定, 只要有异常回滚订单数据
+                //todo 库存锁定, 只要有异常回滚订单数据
                 // 1) 订单号，所有订单项(skuId,num,skuName)
                 WareSkuLockVo wareSkuLockVo = new WareSkuLockVo();
                 wareSkuLockVo.setOrderSn(order.getOrder().getOrderSn());
@@ -165,17 +167,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     return orderItemVo;
                 }).collect(Collectors.toList());
                 wareSkuLockVo.setLocks(collect);
+                // todo 远程锁库存
                 R r = wmsFeignService.orderLockStock(wareSkuLockVo);
                 if (r.getCode()==0) {
-
+                    responseVo.setOrderEntity(order.getOrder());
+                    return responseVo;
+                }else {
+                    responseVo.setCode(3);
+                    return responseVo;
                 }
-
             }else {
                 // 对比失败
                 responseVo.setCode(2);
                 return responseVo;
             }
-
         }else {
             responseVo.setCode(1);
         }

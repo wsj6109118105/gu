@@ -1,9 +1,8 @@
 package com.ware.service.impl;
 
+import com.common.exception.NoStockException;
 import com.common.utils.R;
-import com.ware.Exception.NoStockException;
 import com.ware.feign.ProductFeignService;
-import com.ware.vo.LockStockResult;
 import com.ware.vo.OrderItemVo;
 import com.ware.vo.SkuHasStockVo;
 import com.ware.vo.WareSkuLockVo;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

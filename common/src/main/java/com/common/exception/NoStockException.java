@@ -1,4 +1,4 @@
-package com.ware.Exception;
+package com.common.exception;
 
 /**
  * user:lufei
@@ -6,6 +6,9 @@ package com.ware.Exception;
  **/
 public class NoStockException extends RuntimeException{
     private Long skuId;
+
+    public NoStockException() {}
+
     public NoStockException(Long skuId) {
         super("商品id:"+skuId+"商品没有足够的库存");
     }
