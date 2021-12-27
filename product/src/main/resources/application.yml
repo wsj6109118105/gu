@@ -9,6 +9,9 @@ spring:
       discovery:
         server-addr: 127.0.0.1:8848
         service: product
+    alibaba:
+      seata:
+        tx-service-group: happy_product_group
   application:
     name: product
   jackson:
@@ -43,4 +46,3 @@ mall:
     core-size: 20
     max-size: 200
     keep-alive-time: 10
-

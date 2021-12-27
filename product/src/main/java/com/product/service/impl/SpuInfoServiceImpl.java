@@ -13,6 +13,7 @@ import com.product.feign.WareFeignService;
 import com.product.feign.couponFeignService;
 import com.product.service.*;
 import com.product.vo.*;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
      * 保存商品的信息
      * @param vo
      */
-    @Transactional
+    @GlobalTransactional
     @Override
     public void saveSpuInfo(SpuSaveVo vo) {
         //1.保存基本信息  pms_spu_info

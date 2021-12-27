@@ -9,6 +9,9 @@ spring:
       discovery:
         server-addr: 127.0.0.1:8848
         service: ware
+    alibaba:
+      seata:
+        tx-service-group: happy_ware_group
   application:
     name: ware
   jackson:

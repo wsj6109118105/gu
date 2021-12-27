@@ -4,6 +4,9 @@ spring:
       discovery:
         server-addr: 127.0.0.1:8848
         service: order
+    alibaba:
+      seata:
+        tx-service-group: happy_order_group
   datasource:
     username: root
     password: 123456

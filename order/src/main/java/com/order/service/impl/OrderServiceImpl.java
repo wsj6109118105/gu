@@ -17,6 +17,7 @@ import com.order.interceptor.LoginUser;
 import com.order.service.OrderItemService;
 import com.order.to.OrderCreateTo;
 import com.order.vo.*;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -135,7 +136,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @param submitVo 订单的数据
      * @return 返回支付页面需要的信息
      */
-    @Transactional
+    @GlobalTransactional
     @Override
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo submitVo) {
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
@@ -171,6 +172,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 R r = wmsFeignService.orderLockStock(wareSkuLockVo);
                 if (r.getCode()==0) {
                     responseVo.setOrderEntity(order.getOrder());
+                    int i = 10/0;
                     return responseVo;
                 }else {
                     responseVo.setCode(3);
