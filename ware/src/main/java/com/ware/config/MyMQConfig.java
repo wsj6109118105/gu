@@ -37,7 +37,7 @@ public class MyMQConfig {
         arguments.put("x-dead-letter-exchange","stock-event-exchange");
         arguments.put("x-dead-letter-routing-key","stock.release");
         arguments.put("x-message-ttl",120000);
-        return new Queue("stock.delay.queue",true,false,false);
+        return new Queue("stock.delay.queue",true,false,false,arguments);
     }
 
     @Bean

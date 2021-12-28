@@ -136,7 +136,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @param submitVo 订单的数据
      * @return 返回支付页面需要的信息
      */
-    @GlobalTransactional
+    @Transactional
     @Override
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo submitVo) {
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
@@ -189,8 +189,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return responseVo;
     }
 
+    @Override
+    public OrderEntity getOrderByOrderSn(String orderSn) {
+        return this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
+    }
+
     /**
-     * 保存订单
+     * 保存订单,以及各个订单项
      * @param order 订单信息
      */
     private void saveOrder(OrderCreateTo order) {

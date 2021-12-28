@@ -1,12 +1,16 @@
 package com.ware.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.common.to.mq.StockLockedTo;
 import com.common.utils.PageUtils;
+import com.rabbitmq.client.Channel;
 import com.ware.entity.WareSkuEntity;
 import com.ware.vo.LockStockResult;
 import com.ware.vo.SkuHasStockVo;
 import com.ware.vo.WareSkuLockVo;
+import org.springframework.amqp.core.Message;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -36,5 +40,13 @@ public interface WareSkuService extends IService<WareSkuEntity> {
      * @return
      */
     Boolean orderLockStock(WareSkuLockVo vo);
+
+    /**
+     * 解锁库存方法
+     * @param to
+     * @throws IOException
+     */
+    void handleStockLockedRelease(StockLockedTo to) throws IOException;
+
 }
 
