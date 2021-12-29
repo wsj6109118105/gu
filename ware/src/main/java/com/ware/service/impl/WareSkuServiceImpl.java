@@ -2,6 +2,7 @@ package com.ware.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.common.exception.NoStockException;
+import com.common.to.mq.OrderTo;
 import com.common.to.mq.StockDetailTo;
 import com.common.to.mq.StockLockedTo;
 import com.common.utils.R;
@@ -69,7 +70,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     WareOrderTaskDetailDao wareOrderTaskDetailDao;
 
     /**
-     *
+     * 收到 MQ 解锁库存消息解锁库存
      * @param to
      */
     @Override
@@ -103,6 +104,34 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             }
         }else {
             // 因为库存锁定失败，库存回滚，无需解锁
+        }
+    }
+
+    /**
+     * 防止订单服务卡顿，无法及时更新订单状态，导致库存解锁不成功，导致订单永远无法解锁库存
+     * @param order
+     * @throws IOException
+     */
+    @Transactional
+    @Override
+    public void handleStockLockedRelease(OrderTo order) throws IOException {
+        String orderSn = order.getOrderSn();
+        WareOrderTaskEntity taskEntity = wareOrderTaskService.getOne(new QueryWrapper<WareOrderTaskEntity>().eq("order_sn", orderSn));
+        if (taskEntity!=null) {
+            Long id = taskEntity.getId();
+            List<WareOrderTaskDetailEntity> taskId = wareOrderTaskDetailService.list(
+                    new QueryWrapper<WareOrderTaskDetailEntity>()
+                            .eq("task_id", id)
+                            .eq("lock_status",1));
+            if (taskId!=null) {
+                for (WareOrderTaskDetailEntity detail : taskId) {
+                    unlockStock(detail.getSkuId(),detail.getWareId(),detail.getSkuNum(),detail.getId());
+                }
+            }else {
+                throw new RuntimeException("订单细节查询失败");
+            }
+        }else {
+            throw new RuntimeException("查询任务单失败");
         }
     }
 

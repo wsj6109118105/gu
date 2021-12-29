@@ -1,6 +1,7 @@
 package com.ware.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.common.to.mq.OrderTo;
 import com.common.to.mq.StockLockedTo;
 import com.common.utils.PageUtils;
 import com.rabbitmq.client.Channel;
@@ -48,5 +49,6 @@ public interface WareSkuService extends IService<WareSkuEntity> {
      */
     void handleStockLockedRelease(StockLockedTo to) throws IOException;
 
+    void handleStockLockedRelease(OrderTo order) throws IOException;
 }
 

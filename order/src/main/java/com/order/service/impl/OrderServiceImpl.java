@@ -3,8 +3,10 @@ package com.order.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.common.exception.NoStockException;
+import com.common.to.mq.OrderTo;
 import com.common.utils.R;
 import com.common.vo.MemberResponseVo;
+import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.order.constant.OrderConstant;
 import com.order.dao.OrderItemDao;
 import com.order.entity.OrderItemEntity;
@@ -18,6 +20,8 @@ import com.order.service.OrderItemService;
 import com.order.to.OrderCreateTo;
 import com.order.vo.*;
 import io.seata.spring.annotation.GlobalTransactional;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -72,6 +76,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     OrderItemService orderItemService;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -172,7 +179,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 R r = wmsFeignService.orderLockStock(wareSkuLockVo);
                 if (r.getCode()==0) {
                     responseVo.setOrderEntity(order.getOrder());
-                    int i = 10/0;
+                    rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",order.getOrder());
                     return responseVo;
                 }else {
                     responseVo.setCode(3);
@@ -192,6 +199,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Override
     public OrderEntity getOrderByOrderSn(String orderSn) {
         return this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
+    }
+
+    /**
+     * 超时关闭订单
+     * @param entity 需要关闭的订单
+     */
+    @Override
+    public void closeOrder(OrderEntity entity) {
+        // 关闭订单之前一定要查询订单的状态
+        OrderEntity orderEntity = this.getById(entity.getId());
+        if (Objects.equals(orderEntity.getStatus(), OrderStatusEnum.CREATE_NEW.getCode())) {
+            // 关单
+            orderEntity.setStatus(OrderStatusEnum.CANCLED.getCode());
+            orderEntity.setId(orderEntity.getId());
+            this.updateById(orderEntity);
+            // 发送给 MQ 用来解锁库存
+            OrderTo orderTo = new OrderTo();
+            BeanUtils.copyProperties(orderEntity,orderTo);
+            try {
+                // todo 保证消息发送成功,每一个消息做好日志记录,(给数据库保存每一个消息的详细信息),定期扫描数据库将失败的消息再发送一次
+                rabbitTemplate.convertAndSend("order-event-exchange","order.release.other",orderTo);
+            }catch (Exception e) {
+                // todo 将没发送成功的消息进行重试发送
+            }
+        }
     }
 
     /**

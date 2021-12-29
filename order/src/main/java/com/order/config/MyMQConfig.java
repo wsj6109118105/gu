@@ -15,6 +15,10 @@ import java.util.Map;
 @Configuration
 public class MyMQConfig {
 
+    /**
+     * 创建延时队列
+     * @return
+     */
     @Bean
     public Queue OrderDelayQueue() {
         //String name, boolean durable, boolean exclusive, boolean autoDelete,
@@ -27,12 +31,20 @@ public class MyMQConfig {
         return queue;
     }
 
+    /**
+     * 创建到时间后给服务发送消息的队列
+     * @return
+     */
     @Bean
     public Queue OrderReleaseQueue() {
         Queue queue = new Queue("order.release.queue",true,false,false);
         return queue;
     }
 
+    /**
+     * 创建交换机
+     * @return
+     */
     @Bean
     public Exchange OrderEventExchange() {
         //String name, boolean durable, boolean autoDelete, Map<String, Object> arguments
@@ -40,6 +52,10 @@ public class MyMQConfig {
         return topicExchange;
     }
 
+    /**
+     * 绑定交换机与延时队列  路由键为 order.create.order
+     * @return
+     */
     @Bean
     public Binding OrderCreateOrderBinding() {
         //String destination, DestinationType destinationType, String exchange,
@@ -52,12 +68,28 @@ public class MyMQConfig {
                 null);
     }
 
+    /**
+     * 绑定交换机与给服务发消息的队列   路由键为  order.release.order
+     * @return
+     */
     @Bean
     public Binding OrderReleaseOrderBinding() {
         return new Binding("order.release.queue",
                 Binding.DestinationType.QUEUE,
                 "order-event-exchange",
                 "order.release.order",
+                null);
+    }
+
+    /**
+     * 绑定库存的普通队列   用来取消订单时解锁库存
+     */
+    @Bean
+    public Binding OrderReleaseOtherBinding() {
+        return new Binding("stock.release.queue",
+                Binding.DestinationType.QUEUE,
+                "order-event-exchange",
+                "order.release.other.#",
                 null);
     }
 }

@@ -45,6 +45,11 @@ public class MyRabbitConfig {
              */
             @Override
             public void confirm(CorrelationData correlationData, boolean b, String s) {
+                // 服务器收到了消息
+                /**
+                 * 做好消息确认机制 ，(publish,consumer)
+                 * 每一个消息再数据库做好记录，定期发送失败的消息
+                 */
                 //System.out.println("correlationData.."+correlationData+"...b..."+b+"...s..."+s);
             }
         });   // 设置确认回调
@@ -53,6 +58,7 @@ public class MyRabbitConfig {
         rabbitTemplate.setReturnsCallback(new RabbitTemplate.ReturnsCallback() {
             @Override
             public void returnedMessage(ReturnedMessage returnedMessage) {
+                // 服务报错了，修改数据库，当前消息的状态-> 错误
                 System.out.println(returnedMessage);
             }
         });

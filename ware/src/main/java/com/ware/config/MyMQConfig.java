@@ -17,6 +17,10 @@ import java.util.Map;
 @Configuration
 public class MyMQConfig {
 
+    /**
+     * 创建交换机
+     * @return
+     */
     @Bean
     public Exchange StockEventExchange() {
         return new TopicExchange("stock-event-exchange",true,false);
@@ -31,6 +35,10 @@ public class MyMQConfig {
         return new Queue("stock.release.queue",true,false,false);
     }
 
+    /**
+     * 延时队列，保存需要延时的消息
+     * @return
+     */
     @Bean
     public Queue StockDelayQueue() {
         Map<String,Object> arguments = new HashMap<>();
@@ -40,6 +48,10 @@ public class MyMQConfig {
         return new Queue("stock.delay.queue",true,false,false,arguments);
     }
 
+    /**
+     * 绑定交换机与延时队列   路由键为   stock.locked
+     * @return
+     */
     @Bean
     public Binding StockLockedBinding() {
         //String destination, DestinationType destinationType, String exchange,
@@ -52,6 +64,10 @@ public class MyMQConfig {
                 null);
     }
 
+    /**
+     * 绑定交换机与普通队列    路由键为 stock.release.#
+     * @return
+     */
     @Bean
     public Binding StockReleaseBinding() {
         //String destination, DestinationType destinationType, String exchange,
