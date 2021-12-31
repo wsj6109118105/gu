@@ -10,6 +10,13 @@ spring:
     url: jdbc:mysql://47.99.74.206:3306/gu_ums?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
   application:
     name: member
+  thymeleaf:
+    cache: false
+  session:
+    store-type: redis
+  redis:
+    host: localhost
+    port: 6379
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:

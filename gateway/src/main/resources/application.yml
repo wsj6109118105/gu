@@ -72,7 +72,10 @@ spring:
           uri: lb://order
           predicates:
             - Host=order.happymall.mall
-
+        - id: gumall_member_router
+          uri: lb://member
+          predicates:
+            - Host=member.happymall.mall
 
 
   application:

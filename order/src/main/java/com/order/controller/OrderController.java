@@ -38,6 +38,13 @@ public class OrderController {
         return R.ok().setData(orderEntity);
     }
 
+    @ResponseBody
+    @PostMapping("/listWithItem")  //  请求体只支持 Post
+    public R listWithItem(@RequestBody Map<String, Object> params) {
+        PageUtils page = orderService.queryPageWithItem(params);
+        return R.ok().put("page", page);
+    }
+
     /**
      * 列表
      */
