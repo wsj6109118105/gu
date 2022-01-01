@@ -24,7 +24,8 @@ public class LoginUser implements HandlerInterceptor {
         //  /gorder/order/status/{orderSn}
         String requestURI = request.getRequestURI();
         boolean match = new AntPathMatcher().match("/gorder/order/status/**", requestURI);
-        if (match) {
+        boolean match1 = new AntPathMatcher().match("/Ali/noti/**", requestURI);
+        if (match || match1) {
             return true;
         }
 

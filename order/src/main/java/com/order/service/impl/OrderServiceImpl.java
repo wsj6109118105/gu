@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.order.constant.OrderConstant;
 import com.order.dao.OrderItemDao;
 import com.order.entity.OrderItemEntity;
+import com.order.entity.PaymentInfoEntity;
 import com.order.enume.OrderStatusEnum;
 import com.order.feign.CartFeignService;
 import com.order.feign.MemberFeignService;
@@ -17,6 +18,7 @@ import com.order.feign.ProductFeignService;
 import com.order.feign.WmsFeignService;
 import com.order.interceptor.LoginUser;
 import com.order.service.OrderItemService;
+import com.order.service.PaymentInfoService;
 import com.order.to.OrderCreateTo;
 import com.order.vo.*;
 import io.seata.spring.annotation.GlobalTransactional;
@@ -80,6 +82,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    PaymentInfoService paymentInfoService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -260,6 +265,29 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         }).collect(Collectors.toList());
         page.setRecords(orderSn);
         return new PageUtils(page);
+    }
+
+    /**
+     * 处理支付宝的异步通知
+     * @param vo 支付宝发给我们的数据
+     * @return
+     */
+    @Override
+    public String handlePayResult(PayAsyncVo vo) {
+        // 保存交易流水
+        PaymentInfoEntity paymentInfoEntity = new PaymentInfoEntity();
+        paymentInfoEntity.setAlipayTradeNo(vo.getTrade_no());
+        paymentInfoEntity.setOrderSn(vo.getOut_trade_no());
+        paymentInfoEntity.setPaymentStatus(vo.getTrade_status());
+        paymentInfoEntity.setCallbackTime(vo.getNotify_time());
+        paymentInfoService.save(paymentInfoEntity);
+        // 修改订单的状态信息
+        boolean b = vo.getTrade_status().equals("TRADE_SUCCESS")||vo.getTrade_status().equals("TRADE_FINISHED");
+        if (b) {
+            String orderSn = vo.getOut_trade_no();
+            this.baseMapper.updateOrderStatus(orderSn,OrderStatusEnum.PAYED.getCode());
+        }
+        return null;
     }
 
     /**

@@ -29,7 +29,7 @@ public class MemberWebController {
         param.put("page",pageNum.toString());
         R r = orderFeignService.listWithItem(param);
         model.addAttribute("orders",r.get("page"));
-        System.out.println(JSON.toJSONString(r.get("page")));
+        //System.out.println(JSON.toJSONString(r.get("page")));
         // 查出当前登录用户的所有订单数据
         return "orderList";
     }

@@ -21,9 +21,9 @@ public class LoginUser implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //  /gorder/order/status/{orderSn}
+
         String requestURI = request.getRequestURI();
-        boolean match = new AntPathMatcher().match("/member/member/**", requestURI);
+        boolean match = new AntPathMatcher().match("/member/**", requestURI);
         if (match) {
             return true;
         }
