@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
  **/
 @Component
 @Slf4j
-@EnableAsync   // 开启异步任务功能
-@EnableScheduling
 public class HelloSchedule {
 
     /**
