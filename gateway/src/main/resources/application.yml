@@ -82,7 +82,10 @@ spring:
           uri: lb://member
           predicates:
             - Host=member.happymall.mall
-
+        - id: gumall_seckill_router
+          uri: lb://seckill
+          predicates:
+            - Host=seckill.happymall.mall
 
   application:
     name: gateway
