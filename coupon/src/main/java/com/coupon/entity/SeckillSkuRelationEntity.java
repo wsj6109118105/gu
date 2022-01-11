@@ -10,7 +10,7 @@ import lombok.Data;
 
 /**
  * 秒杀活动商品关联
- * 
+ *
  * @author lufei
  * @email 2362487738@qq.com
  * @date 2021-10-03 21:57:20
@@ -44,11 +44,12 @@ public class SeckillSkuRelationEntity implements Serializable {
 	/**
 	 * 秒杀总量
 	 */
-	private BigDecimal seckillCount;
+	private Integer seckillCount;
 	/**
 	 * 每人限购数量
 	 */
-	private BigDecimal seckillLimit;
+	// todo 修改BigDecimal为Long
+	private Long seckillLimit;
 	/**
 	 * 排序
 	 */

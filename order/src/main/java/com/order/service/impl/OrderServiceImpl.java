@@ -4,6 +4,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.common.exception.NoStockException;
 import com.common.to.mq.OrderTo;
+import com.common.to.mq.SeckillOrderTo;
 import com.common.utils.R;
 import com.common.vo.MemberResponseVo;
 import com.fasterxml.jackson.databind.util.BeanUtil;
@@ -288,6 +289,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             this.baseMapper.updateOrderStatus(orderSn,OrderStatusEnum.PAYED.getCode());
         }
         return null;
+    }
+
+    /**
+     * 创建秒杀订单
+     * @param seckillOrderTo 秒杀商品数据
+     */
+    @Override
+    public void createSeckillOrder(SeckillOrderTo seckillOrderTo) {
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrderSn(seckillOrderTo.getOrderSn());
+        orderEntity.setMemberId(seckillOrderTo.getMemberId());
+        orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        BigDecimal multiply = seckillOrderTo.getSeckillPrice().multiply(new BigDecimal(seckillOrderTo.getNum()));
+        orderEntity.setPayAmount(multiply);
+        this.save(orderEntity);
+        // todo 创建订单项
+        OrderItemEntity itemEntity = new OrderItemEntity();
+        itemEntity.setOrderSn(seckillOrderTo.getOrderSn());
+        itemEntity.setRealAmount(multiply);
+        itemEntity.setSkuQuantity(seckillOrderTo.getNum());
+        orderItemService.save(itemEntity);
     }
 
     /**

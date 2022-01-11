@@ -55,6 +55,6 @@ public class SeckillController {
                      @RequestParam("key") String key,
                      @RequestParam("num") Integer num) {
         String orderSn = seckillService.kill(killId,key,num);
-        return null;
+        return R.ok().setData(orderSn);
     }
 }

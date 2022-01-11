@@ -1,33 +1,35 @@
 package com.order.listener;
 
+import com.common.to.mq.SeckillOrderTo;
 import com.order.entity.OrderEntity;
 import com.order.service.OrderService;
-import com.order.to.OrderCreateTo;
 import com.rabbitmq.client.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 /**
  * user:lufei
- * DATE:2021/12/29
+ * DATE:2022/1/11
  **/
-@Service
-@RabbitListener(queues = "order.release.queue")
-public class OrderCloseListener {
+@Slf4j
+@Component
+@RabbitListener(queues = "order.seckill.order.queue")
+public class OrderSeckillListener {
 
     @Autowired
     OrderService orderService;
 
     @RabbitHandler
-    public void listener(OrderEntity entity, Channel channel, Message message) throws IOException {
-        //System.out.println("收到过期订单"+ entity.getOrderSn());
+    public void listener(SeckillOrderTo seckillOrderTo, Channel channel, Message message) throws IOException {
+        log.info("创建秒杀订单");
         try {
-            orderService.closeOrder(entity);
+            orderService.createSeckillOrder(seckillOrderTo);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
         } catch (Exception e) {
             channel.basicReject(message.getMessageProperties().getDeliveryTag(),true);

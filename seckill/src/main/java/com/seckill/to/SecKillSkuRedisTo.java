@@ -35,20 +35,20 @@ public class SecKillSkuRedisTo {
     /**
      * 秒杀总量
      */
-    private BigDecimal seckillCount;
+    private Integer seckillCount;
     /**
      * 每人限购数量
      */
-    private BigDecimal seckillLimit;
+    private Long seckillLimit;
     /**
      * 排序
      */
     private Integer seckillSort;
 
-    // sku 详细信息
-    private SkuInfoVo skuInfoVo;
-
     private Long startTime;
 
     private Long endTime;
+
+    // sku 详细信息
+    private SkuInfoVo skuInfoVo;
 }

@@ -16,5 +16,9 @@ spring:
         max-size: 50
   session:
     store-type: redis
+  rabbitmq:
+    virtual-host: /
+    host: 47.99.74.206
+    port: 5672
 server:
   port: 18000

@@ -3,7 +3,6 @@ package com.order.config;
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,6 +89,27 @@ public class MyMQConfig {
                 Binding.DestinationType.QUEUE,
                 "order-event-exchange",
                 "order.release.other.#",
+                null);
+    }
+
+    /**
+     * 秒杀服务队列
+     */
+    @Bean
+    public Queue OrderSecKillOrderQueue() {
+        Queue queue = new Queue("order.seckill.order.queue",true,false,false);
+        return queue;
+    }
+
+    /**
+     * 绑定秒杀队列与交换机
+     */
+    @Bean
+    public Binding OrderSecKillOrderQueueBinding() {
+        return new Binding("order.seckill.order.queue",
+                Binding.DestinationType.QUEUE,
+                "order-event-exchange",
+                "order.seckill.order",
                 null);
     }
 }
