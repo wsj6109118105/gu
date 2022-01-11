@@ -588,18 +588,19 @@
         var keyword = $("#searchText").val()
         window.location.href = "http://search.happymall.mall/list.html?keyword=" + keyword;
     }
-        alert(1111);
-        $.get("http://seckill.happymall.mall/currentSeckillSkus", function (response) {
-            alert(11111);
-            response.data.forEach(function (item) {
-                $("<li></li>")
-                    .append($("<img src='"+item.skuInfoVo.skuDefaultImg+"'/>"))
-                    .append($("<p>"+item.skuInfoVo.skuTitle+"</p>"))
-                    .append($("<span>"+item.seckillPrice+"</span>"))
-                    .append($("<s>"+item.skuInfoVo.price+"</s>"))
-                    .appendTo("#seckillSkuContent");
-            })
-        });
+    function tohref(skuId) {
+        location.href = "http://item.happymall.mall/"+skuId+".html"
+    }
+    $.get("http://seckill.happymall.mall/currentSeckillSkus", function (response) {
+        response.data.forEach(function (item) {
+            $("<li onclick='tohref("+item.skuId+")'></li>")
+                .append($("<img style='width: 150px;height: 150px' src='"+item.skuInfoVo.skuDefaultImg+"'/>"))
+                .append($("<p>"+item.skuInfoVo.skuTitle+"</p>"))
+                .append($("<span>"+item.seckillPrice+"</span>"))
+                .append($("<s>"+item.skuInfoVo.price+"</s>"))
+                .appendTo("#seckillSkuContent");
+        })
+    });
 
 
 

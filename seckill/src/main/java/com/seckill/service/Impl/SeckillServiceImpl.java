@@ -19,6 +19,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -57,11 +58,15 @@ public class SeckillServiceImpl implements SeckillService {
             // 上架商品
             List<SeckillSessionsWithSkusVo> data = Session.getData(new TypeReference<List<SeckillSessionsWithSkusVo>>() {
             });
-            // 缓存到 redis
-            //     1 保存活动时间   key:start_endTime   val:skuIds
-            saveSessionInfos(data);
-            //     2 商品的详细信息
-            saveSessionSkuInfos(data);
+            if (data != null) {
+                // todo 保存是设置过期时间
+                // 缓存到 redis
+                //     1 保存活动时间   key:start_endTime   val:skuIds
+                saveSessionInfos(data);
+                //     2 商品的详细信息
+                saveSessionSkuInfos(data);
+            }
+
         }
     }
 
@@ -94,6 +99,47 @@ public class SeckillServiceImpl implements SeckillService {
                 }
             }
         }
+        return null;
+    }
+
+    /**
+     * 获取某个商品的秒杀预告信息
+     * @param skuId 商品id
+     * @return
+     */
+    @Override
+    public SecKillSkuRedisTo getSkuSeckillInfo(Long skuId) {
+        BoundHashOperations<String, String, String> hashOps = stringRedisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+        Set<String> keys = hashOps.keys();
+        if (keys!=null&&keys.size()>0) {
+            String regx = "\\d_"+skuId;
+            for (String key : keys) {
+                if (Pattern.matches(regx,key)) {
+                    String s = hashOps.get(key);
+                    SecKillSkuRedisTo to = JSON.parseObject(s, SecKillSkuRedisTo.class);
+                    long now = new Date().getTime();
+                    Long start = to.getStartTime();
+                    Long end = to.getEndTime();
+                    if (!(now>=start&&now<=end)) {
+                        to.setRandomCode(null);
+                    }
+                    return to;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 秒杀服务实现
+     * @param killId 场次及商品id
+     * @param key 随机码
+     * @param num 秒杀数量
+     * @return
+     */
+    @Override
+    public String kill(String killId, String key, Integer num) {
         return null;
     }
 

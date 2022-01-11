@@ -504,8 +504,13 @@
 									<span>￥</span>
 									<span th:text="${#numbers.formatDecimal(item.info.price,3,2)}">4499.00</span>
 								</li>
-								<li>
-									预约享资格
+								<li style="color: red" th:if="${item.seckillInfoVo!=null}">
+									<span th:if="${#dates.createNow().getTime()<item.seckillInfoVo.startTime}">
+										商品在[[${#dates.format(new java.util.Date(item.seckillInfoVo.startTime),"yyyy-MM-dd HH:mm:ss")}]]进行秒杀
+									</span>
+									<span th:if="${#dates.createNow().getTime()>=item.seckillInfoVo.startTime && #dates.createNow().getTime()<=item.seckillInfoVo.endTime}">
+										秒杀价格:[[${#numbers.formatDecimal(item.seckillInfoVo.seckillPrice,1,2)}]]
+									</span>
 								</li>
 								<li>
 									<a href="/static/item/">
@@ -624,7 +629,12 @@
 
 								</div>
 							</div>
-							<div class="box-btns-two">
+							<div class="box-btns-two" th:if="${#dates.createNow().getTime()>=item.seckillInfoVo.startTime && #dates.createNow().getTime()<=item.seckillInfoVo.endTime}">
+								<a href="#" id="seckill" th:attr="skuId=${item.info.skuId},sessionId=${item.seckillInfoVo.promotionSessionId},code=${item.seckillInfoVo.randomCode}">
+									立即抢购
+								</a>
+							</div>
+							<div class="box-btns-two" th:if="${#dates.createNow().getTime()<item.seckillInfoVo.startTime || #dates.createNow().getTime()>item.seckillInfoVo.endTime}">
 								<a href="#" id="addToCart" th:attr="skuId=${item.info.skuId}">
 									加入购物车
 								</a>
@@ -1739,6 +1749,18 @@
 			location.href = "http://cart.happymall.mall/addToCart?skuId="+skuId+"&num="+num;
 			return false;
 		});
+		$("#seckill").click(function () {
+			var isLogin = [[${session.loginUser!=null}]]
+			if (isLogin) {
+				var killId = $(this).attr("sessionId")+"_"+$(this).attr("skuId");
+				var key = $(this).attr("code");
+				var num = $("#numInput").val();
+				location.href = "http://seckill.happymall.mall/kill?killId="+killId+"&key="+key+"&num="+num;
+			}else {
+				alert("秒杀请先登录");
+			}
+
+		})
 	</script>
 
 </html>

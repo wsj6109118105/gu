@@ -1,8 +1,12 @@
 package com.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
+import com.common.utils.R;
 import com.product.entity.SkuImagesEntity;
 import com.product.entity.SpuInfoDescEntity;
+import com.product.feign.SeckillFeignService;
 import com.product.service.*;
+import com.product.vo.SeckillInfoVo;
 import com.product.vo.SkuItemSaleAttrVo;
 import com.product.vo.SkuItemVo;
 import com.product.vo.SpuItemAttrGroupVo;
@@ -44,6 +48,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     ThreadPoolExecutor poolExecutor;
+
+    @Autowired
+    SeckillFeignService seckillFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -157,8 +164,18 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             skuItemVo.setImages(images);
         }, poolExecutor);
 
+        // 查询是否参与秒杀优惠
+        CompletableFuture<Void> secKillFuture = CompletableFuture.runAsync(() -> {
+            R seckillInfo = seckillFeignService.getSkuSeckillInfo(skuId);
+            if (seckillInfo.getCode() == 0) {
+                SeckillInfoVo seckillInfoVo = seckillInfo.getData(new TypeReference<SeckillInfoVo>() {
+                });
+                skuItemVo.setSeckillInfoVo(seckillInfoVo);
+            }
+        },poolExecutor);
+
         // 等待所有任务完成
-        CompletableFuture.allOf(saleAttrFuture,descFuture,baseAttrFuture,imagesFuture).get();
+        CompletableFuture.allOf(saleAttrFuture,descFuture,baseAttrFuture,imagesFuture,secKillFuture).get();
 
 
         return skuItemVo;

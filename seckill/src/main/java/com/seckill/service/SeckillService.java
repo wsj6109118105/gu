@@ -12,4 +12,8 @@ public interface SeckillService {
     void uploadSecKillSkuLatest3Days();
 
     List<SecKillSkuRedisTo> getCurrentSeckillSkus();
+
+    SecKillSkuRedisTo getSkuSeckillInfo(Long skuId);
+
+    String kill(String killId, String key, Integer num);
 }
