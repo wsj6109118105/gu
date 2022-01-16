@@ -20,5 +20,7 @@ spring:
     virtual-host: /
     host: 47.99.74.206
     port: 5672
+  thymeleaf:
+    cache: false
 server:
   port: 18000
