@@ -17,3 +17,8 @@
     #  id-type: auto
 #server:
 #  port: 8000
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8333

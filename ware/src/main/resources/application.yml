@@ -12,6 +12,9 @@ spring:
     alibaba:
       seata:
         tx-service-group: happy_ware_group
+    sentinel:
+      transport:
+        dashboard: localhost:8333
   application:
     name: ware
   jackson:

@@ -19,6 +19,7 @@ package com.common.exception;
 public enum BizCodeException {
     UNKNOW_EXCEPTION(10000,"系统未知异常"),
     VALID_EXCEPTION(10001,"参数格式校验失败"),
+    TOO_MANY_REQUEST(10002,"请求数量过多"),
     FAILTOUPDATE(14000,"采购单不可被修改"),
     PRODUCT_UP_EXCEPTION(11000,"商品上架出错"),
     USER_EXIST_EXCEPTION(15000,"用户名已存在"),
