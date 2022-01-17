@@ -1,4 +1,4 @@
-package com.seckill.config;
+package com.authServer.config;
 
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.common.exception.BizCodeException;
 import com.common.utils.R;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,9 +15,8 @@ import javax.servlet.http.HttpServletResponse;
  * user:lufei
  * DATE:2022/1/17
  **/
-// 降级数据
 @Configuration
-public class SeckillSentinelConfig implements BlockExceptionHandler {
+public class SentinelConfig implements BlockExceptionHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, BlockException e) throws Exception {

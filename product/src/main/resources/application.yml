@@ -43,9 +43,12 @@ server:
   port: 7200
 logging:
   level:
-    com.product: error
+    com.product: info
 mall:
   thread:
     core-size: 20
     max-size: 200
     keep-alive-time: 10
+feign:
+  sentinel:
+    enabled: true

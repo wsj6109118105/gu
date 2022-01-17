@@ -21,4 +21,6 @@ server:
   servlet:
     session:
       timeout: 30m
-
+feign:
+  sentinel:
+    enabled: true

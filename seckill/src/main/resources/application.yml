@@ -28,4 +28,6 @@ spring:
     cache: false
 server:
   port: 18000
-
+feign:
+  sentinel:
+    enabled: true

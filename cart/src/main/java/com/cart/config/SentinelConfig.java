@@ -1,4 +1,4 @@
-package com.seckill.config;
+package com.cart.config;
 
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
@@ -14,9 +14,8 @@ import javax.servlet.http.HttpServletResponse;
  * user:lufei
  * DATE:2022/1/17
  **/
-// 降级数据
 @Configuration
-public class SeckillSentinelConfig implements BlockExceptionHandler {
+public class SentinelConfig implements BlockExceptionHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, BlockException e) throws Exception {

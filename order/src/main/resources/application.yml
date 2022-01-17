@@ -51,3 +51,6 @@ mall:
     core-size: 20
     max-size: 200
     keep-alive-time: 10
+feign:
+  sentinel:
+    enabled: true

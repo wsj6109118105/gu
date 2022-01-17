@@ -22,3 +22,6 @@ spring:
     sentinel:
       transport:
         dashboard: localhost:8333
+feign:
+  sentinel:
+    enabled: true

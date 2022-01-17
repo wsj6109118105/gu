@@ -38,3 +38,6 @@ mybatis-plus:
       id-type: auto
 server:
   port: 9000
+feign:
+  sentinel:
+    enabled: true
