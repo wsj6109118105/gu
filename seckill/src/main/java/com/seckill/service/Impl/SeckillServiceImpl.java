@@ -1,5 +1,9 @@
 package com.seckill.service.Impl;
 
+import com.alibaba.csp.sentinel.Entry;
+import com.alibaba.csp.sentinel.SphU;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -15,6 +19,7 @@ import com.seckill.to.SecKillSkuRedisTo;
 import com.seckill.vo.SeckillSessionsWithSkusVo;
 import com.seckill.vo.SeckillSkuVo;
 import com.seckill.vo.SkuInfoVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
@@ -34,6 +39,7 @@ import java.util.stream.Collectors;
  * user:lufei
  * DATE:2022/1/3
  **/
+@Slf4j
 @Service
 public class SeckillServiceImpl implements SeckillService {
 
@@ -86,31 +92,50 @@ public class SeckillServiceImpl implements SeckillService {
      *
      * @return
      */
+    @SentinelResource(value = "getCurrentSeckillSkusResource",blockHandler = "blockHandlerForGetCurrentSeckillSkus")
     @Override
     public List<SecKillSkuRedisTo> getCurrentSeckillSkus() {
         // 确定当前时间属于哪个秒杀场次
         long time = new Date().getTime();
-        Set<String> keys = stringRedisTemplate.keys(SESSIONS_CACHE_PREFIX + "*");
-        for (String key : keys) {
-            String replace = key.replace(SESSIONS_CACHE_PREFIX, "");
-            String[] s = replace.split("_");
-            Long startTime = Long.parseLong(s[0]);
-            Long endTime = Long.parseLong(s[1]);
-            // 获取当前场次的商品信息
-            if (time >= startTime && time < endTime) {
-                List<String> range = stringRedisTemplate.opsForList().range(key, 0, -1);
-                BoundHashOperations<String, String, String> hashOps = stringRedisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
-                List<String> list = hashOps.multiGet(range);
-                if (list != null) {
-                    List<SecKillSkuRedisTo> redisTos = list.stream().map(item -> {
-                        //String s1 = item.toString();
-                        SecKillSkuRedisTo skuRedisTo = JSON.parseObject(item, SecKillSkuRedisTo.class);
-                        return skuRedisTo;
-                    }).collect(Collectors.toList());
-                    return redisTos;
+        try (Entry entry = SphU.entry("seckillSkus")){
+            Set<String> keys = stringRedisTemplate.keys(SESSIONS_CACHE_PREFIX + "*");
+            for (String key : keys) {
+                String replace = key.replace(SESSIONS_CACHE_PREFIX, "");
+                String[] s = replace.split("_");
+                Long startTime = Long.parseLong(s[0]);
+                Long endTime = Long.parseLong(s[1]);
+                // 获取当前场次的商品信息
+                if (time >= startTime && time < endTime) {
+                    List<String> range = stringRedisTemplate.opsForList().range(key, 0, -1);
+                    BoundHashOperations<String, String, String> hashOps = stringRedisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+                    List<String> list = hashOps.multiGet(range);
+                    if (list != null) {
+                        List<SecKillSkuRedisTo> redisTos = list.stream().map(item -> {
+                            //String s1 = item.toString();
+                            SecKillSkuRedisTo skuRedisTo = JSON.parseObject(item, SecKillSkuRedisTo.class);
+                            return skuRedisTo;
+                        }).collect(Collectors.toList());
+                        return redisTos;
+                    }
+                    // todo
+                    break;
                 }
             }
+        } catch (BlockException e) {
+            e.printStackTrace();
+            log.error("资源被限流，{}",e.getMessage());
         }
+
+        return null;
+    }
+
+    /**
+     * blockHandler 函数
+     * @param ex
+     * @return
+     */
+    public List<SecKillSkuRedisTo> blockHandlerForGetCurrentSeckillSkus(BlockException ex) {
+        log.error("原方法被降级了");
         return null;
     }
 

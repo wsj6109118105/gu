@@ -86,9 +86,16 @@ spring:
           uri: lb://seckill
           predicates:
             - Host=seckill.happymall.mall
+    sentinel:
+      transport:
+        dashboard: localhost:8333
+        port: 8719
+      scg:
+        fallback:
+          content-type: application/json
+          response-status: 400
 
   application:
     name: gateway
 server:
   port: 88
-
